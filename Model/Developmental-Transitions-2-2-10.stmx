@@ -1,0 +1,1555 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+	<header>
+		<smile version="1.0" namespace="std, isee" uses_arrays="1"/>
+		<name>Developmental-Transitions-2-2-10</name>
+		<uuid>e3c2355c-a557-4b75-a35c-b3db28f3993e</uuid>
+		<vendor>isee systems, inc.</vendor>
+		<product version="2.1.5" isee:build_number="2537" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+	</header>
+	<sim_specs isee:sim_duration="0" isee:simulation_delay="0" isee:restore_on_start="false" method="RK4" time_units="Years" isee:instantaneous_flows="false" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000" isee:interaction_mode="flight_sim">
+		<start>0</start>
+		<stop>21</stop>
+		<dt reciprocal="true">1024</dt>
+	</sim_specs>
+	<dimensions>
+		<dim name="Delay_Parameter">
+			<elem name="Order"/>
+			<elem name="Length"/>
+		</dim>
+	</dimensions>
+	<isee:prefs show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="true" layer="model" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rerun_on_structure_change="false" saved_runs="5" keep="false" rifp="true">
+		<isee:ignored_words>
+			<isee:ignored_word>attributional</isee:ignored_word>
+			<isee:ignored_word>Maladaptive</isee:ignored_word>
+			<isee:ignored_word>maladaptive</isee:ignored_word>
+			<isee:ignored_word>avoidant</isee:ignored_word>
+		</isee:ignored_words>
+	</isee:prefs>
+	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" max_advance_time_in_ms="0" observer_start_page="home_page" enabled="false"/>
+	<isee:time_formats default_format="Builtin">
+		<isee:time_format name="Builtin" type="adaptive"/>
+	</isee:time_formats>
+	<default_format/>
+	<data>
+		<export resource="r../Results.csv" interval="DT" precomputed="false" isee:format="numbers">
+			<all/>
+		</export>
+		<import isee:overwrite="false" resource="r../Parms.csv"/>
+	</data>
+	<isee:optimizer_specs_list active_index="0">
+		<isee:optimizer_specs name="Optimization" method="Powell" additional_starts="0" report_interval="1" confidence_range="0"/>
+	</isee:optimizer_specs_list>
+	<isee:payoff_specs_list>
+		<isee:payoff_specs name="Payoff"/>
+	</isee:payoff_specs_list>
+	<model_units>
+		<unit name="Dimensionless">
+			<eqn>1</eqn>
+			<alias>dmnl</alias>
+			<alias>unitless</alias>
+			<alias>fraction</alias>
+		</unit>
+		<unit name="Years">
+			<eqn/>
+			<alias>yr</alias>
+			<alias>year</alias>
+		</unit>
+	</model_units>
+	<model>
+		<variables>
+			<stock name="Cognitive\nVulnerabilities">
+				<doc>Cognitive Vulnerabilities refers to a combination of attributional style, self, and future consequences (Mezulis et al 2009) that place a person at greater risk of depression in the face of stressful events. For the purpose of this model, cognitive vulnerabilities are grounded in hopelessness theory of depression, however, theories of depression will vary in how cognitive vulnerabilities are defined and measured. Cognitive Vulnerabilities are quantified on a 0 to 100 scale in CV Units as a placeholder for a specific scale or measurement model. A value of 0 corresponds to no cognitive vulnerabilities while a value of 100 corresponds to the maximum level of cognitive vulnerabilities. The initial value of Cognitive Vulnerabilities is set by the parameter, Initial Cognitive Vulnerabilities. </doc>
+				<eqn>Initial_Cognitive_Vulnerabilities</eqn>
+				<inflow>Developmental_Transitions</inflow>
+				<inflow>Developmental_Change_in_Cognitive_Vulnerabilities</inflow>
+				<units>CV Units</units>
+			</stock>
+			<flow name="Developmental\nTransitions">
+				<doc>This represents the exogenous shock of school transitions on cognitive vulnerabilities as stressful events. Specifically, we consider age dependent school transitions in this model. The impact of school transitions on Cognitive Vulnerabilities is treated as a pulse function that has a maximum fixed impact of 50 CV Units on the individual and is restricted so that Cognitive Vulnerabilities does not exceed the upper bound of 100 CV Units. Note that the magnitude impact from school transitions on developmental transitions can differ as Cognitive Vulnerabilities approach the upper limit through the expression (Max_Cognitive_Vulnerabilities-Cognitive_Vulnerabilities)/Max_Cognitive_Vulnerabilities. </doc>
+				<eqn>School_Transitions*
+(Max_Cognitive_Vulnerabilities-Cognitive_Vulnerabilities)/Max_Cognitive_Vulnerabilities</eqn>
+				<non_negative/>
+				<units>CV Units/Years</units>
+			</flow>
+			<aux name="Max Cognitive\nVulnerabilities">
+				<doc>Upper bound on cognitive vulnerabilities. </doc>
+				<eqn>100</eqn>
+				<units>CV Units</units>
+			</aux>
+			<aux name="Magnitude\nof Developmental\nShocks">
+				<doc>Magnitude of shocks from school developmental transitions. These are assumed to be uniform across all developmental transitions and exogenous. However, these assumptions can be relaxed to consider more complex feedback theories. </doc>
+				<eqn>50</eqn>
+				<units>CV Units</units>
+			</aux>
+			<aux name="Cognitive\nVulnerabilities\nAT">
+				<doc>Individual time constant determining how fast cognitive vulnerabilities increase or decrease. This is an individual trait. </doc>
+				<eqn>0.5</eqn>
+				<units>Years</units>
+			</aux>
+			<aux name="Effect of\nFamily Support\non Cognitive\nVulnerabilities">
+				<doc>This is the effect of family support on changes in developmental changes in cognitive vulnerabilities. The present formulation assumes a simple linear relationship normalized by a reference value of 50 on a 0 to 100 scale. A value of 1.0 has no effect while a value of 1.2 increases the natural rate of decreasing cognitive vulnerabilities by 20%. </doc>
+				<eqn>Family_Support/50</eqn>
+				<gf>
+					<xscale min="0" max="2"/>
+					<yscale min="0" max="2"/>
+					<ypts>0,0.2,0.4,0.6,0.8,1,1.2,1.4,1.6,1.8,2</ypts>
+				</gf>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="Effect of\nMaladaptive\nBehaviors on\nCognitive\nVulnerabilities">
+				<doc>This is the effect of  on changes in developmental changes in cognitive vulnerabilities. The present formulation assumes a simple linear relationship normalized by a reference value of 50 on a 0 to 100 scale. A value of 1.0 has no effect while a value of 1.2 increases the natural rate of decreasing cognitive vulnerabilities by 20%. </doc>
+				<eqn>Maladaptive_Behaviors/50</eqn>
+				<gf>
+					<xscale min="0" max="2"/>
+					<yscale min="0" max="2"/>
+					<ypts>0,0.2,0.4,0.6,0.8,1,1.2,1.4,1.6,1.8,2</ypts>
+				</gf>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="Maladaptive\nBehaviors">
+				<doc>Maladaptive Behaviors is quantified on a 0 to 100 scale with 0 = no maladaptive behaviors and 100 = the maximum level of maladaptive behavior in units of Maladaptive Behavior Units. Maladaptive Behaviors is proportional to Avoidant Coping, but has a delayed response to changes in Avoidant Coping. The assumption is that this is a third order delay where an initial period of avoidant coping will not impact the onset of maladaptive behaviors, but over time, maladaptive behaviors and has an average time of onset of MB Delay. </doc>
+				<eqn>SMTH3(Avoidant_Coping, Onset_of_Maladaptive_Behaviors_Delay)</eqn>
+				<range min="0" max="100"/>
+				<gf>
+					<xscale min="0" max="100"/>
+					<yscale min="0" max="100"/>
+					<ypts>0,10,20,30,40,50,60,70,80,90,100</ypts>
+				</gf>
+				<units>MB Units</units>
+			</aux>
+			<aux name="Initial Cognitive\nVulnerabilities">
+				<doc>Initial value for cognitive vulnerabilities for an individual at birth.  </doc>
+				<eqn>25</eqn>
+				<scale min="0" max="100"/>
+				<range min="0" max="100"/>
+				<units>CV Units</units>
+			</aux>
+			<flow name="Developmental\nChange in\nCognitive\nVulnerabilities">
+				<doc>This represents the net change in cognitive vulnerabilities due to endogenous individual and family dynamics. The rate of change reflects a natural individual recovery rate where cognitive vulnerabilities decay with a time constant (TC). The natural recovery rate is modified by the effects of maladaptive behaviors and family support, which are assumed to be independent in their direct effects on cognitive vulnerabilities. Hence, the effects of maladaptive behaviors and family support are additive as opposed to multiplicative. 
+
+Since Cognitive Vulnerabilities are have an upper bound determined by Max Cognitive Vulnerabilities, an increase in Cognitive Vulnerabilities is constrained with the expression (Max_Cognitive_Vulnerabilities - Cognitive_Vulnerabilities)/Max_Cognitive_Vulnerabilities. However, a decrease in Cognitive Vulnerabilities is also likely to be impacted by high levels of Cognitive Vulnerabilities. For simplicity, the magnitude of the effect is assumed to be same for both increasing and decreasing cognitive vulnerabilities near the upper limits of cognitive vulnerabilities. </doc>
+				<eqn>(Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities*Cognitive_Vulnerabilities/Cognitive_Vulnerabilities_AT -
+ Effect_of_Family_Support_on_Cognitive_Vulnerabilities*Cognitive_Vulnerabilities/Cognitive_Vulnerabilities_AT) *
+(Max_Cognitive_Vulnerabilities - Cognitive_Vulnerabilities)/Max_Cognitive_Vulnerabilities</eqn>
+				<units>CV Units/Years</units>
+			</flow>
+			<aux name="Avoidant\nCoping">
+				<doc>This is quantified on a 0 to 100 scale with 0 = no avoidant coping and 100 = the maximum level of avoidant coping in units of Avoidant Coping Units (AC Units). Avoidant coping is proportional to cognitive vulnerabilities. Avoidant coping is assumed to be an immediate and direct effect of cognitive vulnerabilities. </doc>
+				<eqn>Cognitive_Vulnerabilities</eqn>
+				<gf>
+					<xscale min="0" max="100"/>
+					<yscale min="0" max="100"/>
+					<ypts>0,10,20,30,40,50,60,70,80,90,100</ypts>
+				</gf>
+				<units>AC Units</units>
+			</aux>
+			<stock name="Family\nSupport">
+				<doc>Family support refers to overall family support of the individual with respect to changes in maladaptive and avoidant behavior and quantified on a scale of 0 to 100 Family Support Units. </doc>
+				<eqn>Initial_Family_Support</eqn>
+				<inflow>Net_Change_in_Family_Support</inflow>
+				<units>FS Units</units>
+			</stock>
+			<flow name="Net Change\nin Family Support">
+				<doc>Changes in family support are a function of family&apos;s recognition and response to maladaptive behaviors and avoidant coping. Family support increases and decreases according to adjustment time (i.e., time constant), and moderated when family support is near the upper bound. Family support increases and decreases independently for maladaptive behaviors and avoidant coping, i.e., additive. </doc>
+				<eqn>(Max_Family_Support*Family_Response_to_Maladaptive_Behavior +
+ Max_Family_Support*Family_Response_to_Avoidant_Coping - 
+ Family_Support)/Family_Support_AT*
+ (Max_Family_Support - Family_Support)/Max_Family_Support</eqn>
+				<units>FS Units/Years</units>
+			</flow>
+			<aux name="Family\nResponse to\nMaladaptive\nBehavior">
+				<doc>Response refers to the recognition of changes in an individual&apos;s maladaptive behavior. This is the delayed recognition of maladaptive behaviors. The present formulation assumes a first order information delay where there is an immediate, but delayed reaction to a change. </doc>
+				<eqn>SMTH1(Maladaptive_Behaviors/50, Family_Response_Delay)</eqn>
+				<gf>
+					<xscale min="0" max="2"/>
+					<yscale min="0" max="1"/>
+					<ypts>0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1</ypts>
+				</gf>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="Family\nResponse to\nAvoidant\nCoping">
+				<doc>Response refers to the recognition of changes in an individual&apos;s maladaptive behavior. This is the delayed recognition of avoidant coping. The present formulation assumes a first order information delay where there is an immediate, but delayed reaction to a change. </doc>
+				<eqn>SMTH1(Avoidant_Coping/50,  Family_Response_Delay)</eqn>
+				<gf>
+					<xscale min="0" max="2"/>
+					<yscale min="0" max="1"/>
+					<ypts>0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1</ypts>
+				</gf>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="Family\nResponse\nDelay">
+				<doc>Average perception delay in years between a change in behavior and family response. </doc>
+				<eqn>25</eqn>
+				<units>Years</units>
+			</aux>
+			<aux name="Onset of\nMaladaptive\nBehaviors Delay">
+				<doc>Average delay between changes in avoidant coping and changes in maladaptive behavior.</doc>
+				<eqn>0.125</eqn>
+				<units>Years</units>
+			</aux>
+			<aux name="Initial Family\nSupport">
+				<eqn>20</eqn>
+				<scale min="0" max="100"/>
+				<range min="0" max="100"/>
+				<units>FS Units</units>
+			</aux>
+			<aux name="Max Family\nSupport">
+				<doc>Upper bound on family support.</doc>
+				<eqn>100</eqn>
+				<units>FS Units</units>
+			</aux>
+			<aux name="Family\nSupport\nAT">
+				<doc>Family time constant determining how fast family support increase or decrease. This is family trait. </doc>
+				<eqn>25</eqn>
+				<units>Years</units>
+			</aux>
+			<aux name="R1 Loop Score">
+				<eqn>LOOPSCORE(Developmental_Change_in_Cognitive_Vulnerabilities,Cognitive_Vulnerabilities,Avoidant_Coping,Maladaptive_Behaviors,Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities)</eqn>
+				<isee:loopscore/>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="B1 Loop Score">
+				<eqn>LOOPSCORE(Developmental_Change_in_Cognitive_Vulnerabilities,Cognitive_Vulnerabilities,Avoidant_Coping,Maladaptive_Behaviors,Family_Response_to_Maladaptive_Behavior,Net_Change_in_Family_Support,Family_Support,Effect_of_Family_Support_on_Cognitive_Vulnerabilities)</eqn>
+				<isee:loopscore/>
+				<units>Dim</units>
+			</aux>
+			<aux name="B2 Loop Score">
+				<eqn>LOOPSCORE(Developmental_Change_in_Cognitive_Vulnerabilities,Cognitive_Vulnerabilities,Avoidant_Coping,Family_Response_to_Avoidant_Coping,Net_Change_in_Family_Support,Family_Support,Effect_of_Family_Support_on_Cognitive_Vulnerabilities)</eqn>
+				<isee:loopscore/>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="School\nTransitions">
+				<doc>School transitions are represented as age specific pulse functions at ages 5, 11, 14, and 18 corresponding to school transitions into kindergarten, middle school, high school, and graduation from high school. Using a pulse function introduces a discontinuity in the simulation that could potentially generate artifacts from the numerical simulation. However, this effect can readily be checked by smoothing the pulse functions using a first or third order delay. This would conceptually correspond to a theory where the direct effects of school transitions on cognitive vulnerabilities were spread out over time. While this may be more realistic, the smoothing of the transitions also makes it harder to distinguish the exogenous school transitions effects from the endogenous individual and family response effects. Hence, for simplicity of analysis, school transitions have been modeled as pulse functions. </doc>
+				<eqn>PULSE(Magnitude_of_Developmental_Shocks,  5, 0) +
+PULSE(Magnitude_of_Developmental_Shocks, 11, 0) +
+PULSE(Magnitude_of_Developmental_Shocks, 14, 0) +
+PULSE(Magnitude_of_Developmental_Shocks, 18, 0)</eqn>
+				<units>CV Units/Years</units>
+			</aux>
+			<aux name="B3 Loop Score">
+				<eqn>LOOPSCORE(Net_Change_in_Family_Support,Family_Support)</eqn>
+				<isee:loopscore/>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="L1 Loop Score">
+				<eqn>LOOPSCORE(Developmental_Change_in_Cognitive_Vulnerabilities,Cognitive_Vulnerabilities)</eqn>
+				<isee:loopscore/>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="Cognitive Vulnerabilities MIN">
+				<eqn>MAX(Cognitive_Vulnerabilities_AT*0.5,  0.1)</eqn>
+				<units>Years</units>
+			</aux>
+			<aux name="Cognitive Vulnerabilities MAX">
+				<eqn>MIN(Cognitive_Vulnerabilities_AT*1.5, 3 )</eqn>
+				<units>Years</units>
+			</aux>
+			<aux name="Current Page">
+				<eqn>0</eqn>
+				<units>Dimensionless</units>
+			</aux>
+		</variables>
+		<views>
+			<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+				<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+				<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+					<isee:series_styles>
+						<isee:series_style color="blue" thickness="1"/>
+						<isee:series_style color="red" thickness="1"/>
+						<isee:series_style color="fuchsia" thickness="1"/>
+						<isee:series_style color="#008F44" thickness="1"/>
+						<isee:series_style color="#FF7F00" thickness="1"/>
+						<isee:series_style color="#7F00FF" thickness="1"/>
+						<isee:series_style color="#0CA0FF" thickness="1"/>
+						<isee:series_style color="lime" thickness="1"/>
+						<isee:series_style color="#FF007F" thickness="1"/>
+						<isee:series_style color="aqua" thickness="1"/>
+						<isee:series_style color="#F586FF" thickness="1"/>
+						<isee:series_style color="black" thickness="1"/>
+						<isee:series_style color="#C8C8C8" thickness="1"/>
+					</isee:series_styles>
+				</graph>
+				<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="beginning" report_flows="instantaneous" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				<button color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595"/>
+				<isee:annotation color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595" popup_corner_radius="0" popup_background_color="#FFFECF"/>
+				<slider color="#66CC66" background="#E0E0E0" font_size="12pt" num_ticks="3" label_side="top" wrap_title="true" vertical="false" isee:fancy_appearance="false" isee:show_hover_tip="when_deciding" input_expands="true" input_width="100"/>
+				<isee:dual_slider color="black" background="white" font_size="12pt" num_ticks="3" label_side="top" wrap_title="true" isee:show_hover_tip="when_deciding" input_expands="true" input_width="100"/>
+				<isee:sim_speed_slider color="black" background="white"/>
+				<isee:time_slider color="#E95F74" background="silver"/>
+				<isee:pie_input color="black" background="white" font_size="12pt" legend_position="bottom" isee:transparent="false"/>
+				<knob color="#66CC66" background="#E0E0E0" font_size="12pt" label_side="bottom" wrap_title="true"/>
+				<numeric_input color="black" background="#E0E0E0" font_size="12pt" label_side="left" wrap_title="true" input_expands="false" input_width="100"/>
+				<switch color="black" background="#E0E0E0" font_size="12pt" label_side="top" wrap_title="true" isee:appearance="switch" isee:on_color="green"/>
+				<options color="black" background="white" appearance="radio-buttons" arrangement="vertical"/>
+				<graphical_input color="black" background="#E0E0E0" font_size="12pt" isee:show_hover_tip="true"/>
+				<group_input color="black" background="#E0E0E0" font_size="12pt"/>
+				<lamp color="black" background="white" font_size="9pt"/>
+				<gauge color="black" background="white" font_size="9pt" needle_color="#F09F72" bar_color="#EEEEEE" bar_progress_color="black" appearance="radial" num_major_ticks="11" num_minor_ticks="11" show_numeric_value="true"/>
+				<isee:spatial_map color="black" background="white" font_size="12pt"/>
+				<isee:animation_object color="black" background="white" font_size="12pt"/>
+				<isee:navigation_widget color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_color="#999999" border_width="thin" border_style="solid" item_spacing="6" appearance="tabs" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD"/>
+				<isee:shape color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_width="thin" border_style="solid" opacity="1" transparent_background="true"/>
+				<isee:selector color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:iframe color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_width="thin" border_style="solid"/>
+				<isee:financial_table color="black" background="#E0E0E0" text_align="right" font_size="12pt" hide_border="false" auto_fit="true" first_column_width="250" other_column_width="100" header_font_style="normal" header_font_weight="bold" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="14pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+			</style>
+			<view isee:show_pages="true" background="white" isee:converter_size="name_only" page_width="768" page_height="596" isee:page_cols="2" isee:page_rows="2" isee:scroll_x="21.6667" isee:scroll_y="5" zoom="120" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
+				<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+					<stock color="blue" background="white" font_color="blue" font_size="9pt" label_side="top">
+						<shape type="rectangle" width="55" height="45"/>
+					</stock>
+					<flow color="blue" background="white" font_color="blue" font_size="9pt" label_side="bottom"/>
+					<isee:placeholder color="#228B22" background="white" font_color="#228B22" font_size="9pt" label_side="bottom"/>
+					<module color="blue" background="white" font_color="blue" font_size="9pt" label_side="top">
+						<shape type="rectangle" width="55" height="45"/>
+					</module>
+					<aux color="blue" background="white" font_color="blue" font_size="9pt" label_side="bottom">
+						<shape type="name_only"/>
+					</aux>
+					<group color="red" background="white" font_color="red" font_size="9pt"/>
+					<connector color="#FF007F" background="white" font_color="#FF007F" font_size="9pt" isee:thickness="1"/>
+					<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+					<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+						<isee:series_styles>
+							<isee:series_style color="blue" thickness="1"/>
+							<isee:series_style color="red" thickness="1"/>
+							<isee:series_style color="fuchsia" thickness="1"/>
+							<isee:series_style color="#008F44" thickness="1"/>
+							<isee:series_style color="#FF7F00" thickness="1"/>
+							<isee:series_style color="#7F00FF" thickness="1"/>
+							<isee:series_style color="#0CA0FF" thickness="1"/>
+							<isee:series_style color="#108040" thickness="1"/>
+							<isee:series_style color="#FF007F" thickness="1"/>
+							<isee:series_style color="#FD6666" thickness="1"/>
+							<isee:series_style color="#F586FF" thickness="1"/>
+							<isee:series_style color="black" thickness="1"/>
+							<isee:series_style color="#7F7F7F" thickness="1"/>
+						</isee:series_styles>
+					</graph>
+					<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="beginning" report_flows="instantaneous" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				</style>
+				<stock label_side="center" x="317.25" y="156.875" width="68" height="50" name="Cognitive\nVulnerabilities"/>
+				<flow label_side="top" x="447.063" y="182.5" name="Developmental\nTransitions">
+					<pts>
+						<pt x="508.875" y="182.5"/>
+						<pt x="385.25" y="182.5"/>
+					</pts>
+				</flow>
+				<connector uid="1" polarity="-" isee:polarity_placement="inside" angle="32.667">
+					<from>Cognitive_Vulnerabilities</from>
+					<to>Developmental_Transitions</to>
+				</connector>
+				<aux x="481.5" y="201.375" width="63.25" height="26" name="Max Cognitive\nVulnerabilities"/>
+				<connector uid="2" angle="154.243">
+					<from>Max_Cognitive_Vulnerabilities</from>
+					<to>Developmental_Transitions</to>
+				</connector>
+				<aux label_side="top" x="466.167" y="40.625" width="76.25" height="38" name="Magnitude\nof Developmental\nShocks"/>
+				<connector uid="3" polarity="+" isee:polarity_placement="inside" angle="270">
+					<from>Magnitude_of_Developmental_Shocks</from>
+					<to>School_Transitions</to>
+				</connector>
+				<aux label_side="top" x="120.5" y="122" width="62.25" height="38" name="Cognitive\nVulnerabilities\nAT"/>
+				<aux label_side="top" x="145" y="249.833" width="66.25" height="50" name="Effect of\nFamily Support\non Cognitive\nVulnerabilities"/>
+				<aux label_side="top" x="229.583" y="247.375" width="62.25" height="62" name="Effect of\nMaladaptive\nBehaviors on\nCognitive\nVulnerabilities"/>
+				<aux label_side="bottom" x="317.25" y="338.75" width="54.25" height="26" name="Maladaptive\nBehaviors"/>
+				<connector uid="12" polarity="+" isee:polarity_placement="inside" angle="158.834">
+					<from>Maladaptive_Behaviors</from>
+					<to>Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities</to>
+				</connector>
+				<aux x="380.958" y="78.625" width="67.25" height="26" name="Initial Cognitive\nVulnerabilities"/>
+				<flow label_side="top" x="257.438" y="182.5" name="Developmental\nChange in\nCognitive\nVulnerabilities">
+					<pts>
+						<pt x="185.625" y="182.5"/>
+						<pt x="317.25" y="182.5"/>
+					</pts>
+				</flow>
+				<connector uid="10" polarity="-" isee:polarity_placement="inside" angle="356.998">
+					<from>Cognitive_Vulnerabilities_AT</from>
+					<to>Developmental_Change_in_Cognitive_Vulnerabilities</to>
+				</connector>
+				<connector uid="9" polarity="+" isee:polarity_placement="inside" angle="102.623">
+					<from>Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities</from>
+					<to>Developmental_Change_in_Cognitive_Vulnerabilities</to>
+				</connector>
+				<connector uid="8" polarity="-" isee:polarity_placement="inside" angle="73.3008">
+					<from>Effect_of_Family_Support_on_Cognitive_Vulnerabilities</from>
+					<to>Developmental_Change_in_Cognitive_Vulnerabilities</to>
+				</connector>
+				<connector uid="5" polarity="+" isee:polarity_placement="inside" angle="247.38">
+					<from>
+						<alias uid="6"/>
+					</from>
+					<to>Developmental_Change_in_Cognitive_Vulnerabilities</to>
+				</connector>
+				<connector uid="4" angle="225.207">
+					<from>Cognitive_Vulnerabilities</from>
+					<to>Developmental_Change_in_Cognitive_Vulnerabilities</to>
+				</connector>
+				<aux label_side="right" label_angle="315" x="453.813" y="269.875" width="41.25" height="26" name="Avoidant\nCoping"/>
+				<connector uid="15" polarity="+" isee:polarity_placement="inside" delay_mark="true" angle="242.879">
+					<from>Avoidant_Coping</from>
+					<to>Maladaptive_Behaviors</to>
+				</connector>
+				<connector uid="16" polarity="+" isee:polarity_placement="inside" angle="339.236">
+					<from>Cognitive_Vulnerabilities</from>
+					<to>Avoidant_Coping</to>
+				</connector>
+				<stacked_container uid="17" x="856.25" y="25.7913" width="574.792" height="414.167" visible_index="1">
+					<graph legend_position="right" width="574.792" height="414.167" comparative="true" type="time_series" show_grid="false" isee:tick_type="none" include_units_in_legend="false" plot_numbers="true" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="8" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="false" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Cognitive_Vulnerabilities"/>
+							<scale min="0" max="100"/>
+						</plot>
+					</graph>
+					<graph width="574.792" height="414.167" type="time_series" show_grid="false" isee:tick_type="none" include_units_in_legend="false" plot_numbers="true" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="8" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="#408002" isee:keep_zero_visible="false" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Cognitive_Vulnerabilities"/>
+							<scale min="0" max="100"/>
+						</plot>
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="1" show_y_axis="true">
+							<entity name="Family_Support"/>
+						</plot>
+					</graph>
+					<graph legend_position="right" width="574.792" height="414.167" type="time_series" show_grid="false" isee:tick_type="none" include_units_in_legend="false" plot_numbers="true" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="8" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="#408002" isee:keep_zero_visible="false" pen_width="3" index="0" show_y_axis="true">
+							<entity name="Cognitive_Vulnerabilities"/>
+							<scale min="0"/>
+						</plot>
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="1" show_y_axis="true">
+							<entity name="Family_Support"/>
+						</plot>
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="2" show_y_axis="true">
+							<entity name="B1_Loop_Score"/>
+							<scale min="-100" max="100"/>
+						</plot>
+						<plot color="red" isee:keep_zero_visible="false" pen_width="1" index="3" show_y_axis="true">
+							<entity name="B2_Loop_Score"/>
+							<scale min="-100" max="100"/>
+						</plot>
+						<plot color="#7F00FF" isee:keep_zero_visible="true" pen_width="1" index="4" show_y_axis="true">
+							<entity name="B3_Loop_Score"/>
+						</plot>
+						<plot color="fuchsia" isee:keep_zero_visible="false" pen_width="1" index="5" show_y_axis="true">
+							<entity name="R1_Loop_Score"/>
+							<scale min="-100" max="100"/>
+						</plot>
+						<plot color="#0CA0FF" isee:keep_zero_visible="true" pen_width="1" index="6" show_y_axis="true">
+							<entity name="L1_Loop_Score"/>
+						</plot>
+					</graph>
+					<graph width="574.792" height="414.167" type="time_series" show_grid="false" isee:tick_type="none" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Developmental_Transitions"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stock label_side="center" x="144.125" y="331.25" width="68" height="50" name="Family\nSupport"/>
+				<connector uid="18" polarity="+" isee:polarity_placement="outside" angle="90">
+					<from>Family_Support</from>
+					<to>Effect_of_Family_Support_on_Cognitive_Vulnerabilities</to>
+				</connector>
+				<flow label_side="left" label_angle="135" x="173.75" y="464.875" name="Net Change\nin Family Support">
+					<pts>
+						<pt x="173.75" y="557.5"/>
+						<pt x="173.75" y="381.25"/>
+					</pts>
+				</flow>
+				<aux label_side="top" x="242" y="401.875" width="56.25" height="50" name="Family\nResponse to\nMaladaptive\nBehavior"/>
+				<aux label_side="top" x="392.063" y="453.25" width="56.25" height="50" name="Family\nResponse to\nAvoidant\nCoping"/>
+				<connector uid="19" polarity="+" isee:polarity_placement="outside" delay_mark="true" angle="242.063">
+					<from>Maladaptive_Behaviors</from>
+					<to>Family_Response_to_Maladaptive_Behavior</to>
+				</connector>
+				<connector uid="20" polarity="+" isee:polarity_placement="outside" delay_mark="true" angle="292.885">
+					<from>Avoidant_Coping</from>
+					<to>Family_Response_to_Avoidant_Coping</to>
+				</connector>
+				<connector uid="21" polarity="+" isee:polarity_placement="inside" angle="211.034">
+					<from>Family_Response_to_Maladaptive_Behavior</from>
+					<to>Net_Change_in_Family_Support</to>
+				</connector>
+				<connector uid="22" polarity="+" isee:polarity_placement="outside" angle="204.376">
+					<from>Family_Response_to_Avoidant_Coping</from>
+					<to>Net_Change_in_Family_Support</to>
+				</connector>
+				<aux label_side="top" x="345.813" y="397.25" width="46.25" height="38" name="Family\nResponse\nDelay"/>
+				<connector uid="23" polarity="-" isee:polarity_placement="outside" angle="208.486">
+					<from>Family_Response_Delay</from>
+					<to>Family_Response_to_Maladaptive_Behavior</to>
+				</connector>
+				<connector uid="24" polarity="-" isee:polarity_placement="outside" angle="275.528">
+					<from>Family_Response_Delay</from>
+					<to>Family_Response_to_Avoidant_Coping</to>
+				</connector>
+				<aux label_side="top" x="356.875" y="277.708" width="71.25" height="38" name="Onset of\nMaladaptive\nBehaviors Delay"/>
+				<connector uid="25" polarity="-" isee:polarity_placement="inside" angle="245.056">
+					<from>Onset_of_Maladaptive_Behaviors_Delay</from>
+					<to>Maladaptive_Behaviors</to>
+				</connector>
+				<aux x="64.25" y="343.25" width="56.25" height="26" name="Initial Family\nSupport"/>
+				<connector uid="26" polarity="-" isee:polarity_placement="inside" angle="223.084">
+					<from>Family_Support</from>
+					<to>Net_Change_in_Family_Support</to>
+				</connector>
+				<aux label_side="left" x="59.375" y="475.25" width="52.25" height="26" name="Max Family\nSupport"/>
+				<connector uid="27" polarity="+" isee:polarity_placement="outside" angle="14.8354">
+					<from>Max_Family_Support</from>
+					<to>Net_Change_in_Family_Support</to>
+				</connector>
+				<aux label_side="left" x="97.5" y="519.75" width="37.25" height="38" name="Family\nSupport\nAT"/>
+				<connector uid="28" polarity="-" isee:polarity_placement="outside" angle="52.0446">
+					<from>Family_Support_AT</from>
+					<to>Net_Change_in_Family_Support</to>
+				</connector>
+				<aux x="231.583" y="623.167" width="66.25" height="14" name="R1 Loop Score"/>
+				<aux x="232.083" y="637.167" width="65.25" height="14" name="B1 Loop Score"/>
+				<aux x="232.083" y="651.167" width="65.25" height="14" name="B2 Loop Score"/>
+				<aux label_side="top" x="479.167" y="113.125" width="50.25" height="26" name="School\nTransitions"/>
+				<connector uid="35" polarity="+" isee:polarity_placement="inside" angle="249.727">
+					<from>School_Transitions</from>
+					<to>Developmental_Transitions</to>
+				</connector>
+				<aux x="318.5" y="627.167" width="65.25" height="14" name="B3 Loop Score"/>
+				<aux x="319" y="641.167" width="64.25" height="14" name="L1 Loop Score"/>
+				<isee:loop_indicator font_size="9pt" text="R1" orientation="clockwise" uid="36" x="329.375" y="224.375" width="30" height="30">
+					<isee:entities>
+						<item uid="9"/>
+						<item uid="16"/>
+						<item uid="15"/>
+						<item uid="12"/>
+						<entity name="Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities"/>
+						<entity name="Developmental_Change_in_Cognitive_Vulnerabilities"/>
+						<entity name="Cognitive_Vulnerabilities"/>
+						<entity name="Avoidant_Coping"/>
+						<entity name="Maladaptive_Behaviors"/>
+					</isee:entities>
+				</isee:loop_indicator>
+				<isee:loop_indicator font_size="9pt" text="B1" orientation="clockwise" uid="37" x="245.708" y="336.75" width="30" height="30">
+					<isee:entities>
+						<item uid="18"/>
+						<item uid="8"/>
+						<item uid="16"/>
+						<item uid="15"/>
+						<item uid="19"/>
+						<item uid="21"/>
+						<entity name="Family_Support"/>
+						<entity name="Effect_of_Family_Support_on_Cognitive_Vulnerabilities"/>
+						<entity name="Developmental_Change_in_Cognitive_Vulnerabilities"/>
+						<entity name="Cognitive_Vulnerabilities"/>
+						<entity name="Avoidant_Coping"/>
+						<entity name="Maladaptive_Behaviors"/>
+						<entity name="Family_Response_to_Maladaptive_Behavior"/>
+						<entity name="Net_Change_in_Family_Support"/>
+					</isee:entities>
+				</isee:loop_indicator>
+				<isee:loop_indicator font_size="9pt" text="B2" orientation="clockwise" uid="38" x="419.167" y="358.083" width="30" height="30">
+					<isee:entities>
+						<item uid="20"/>
+						<item uid="22"/>
+						<item uid="18"/>
+						<item uid="8"/>
+						<item uid="16"/>
+						<entity name="Avoidant_Coping"/>
+						<entity name="Family_Response_to_Avoidant_Coping"/>
+						<entity name="Net_Change_in_Family_Support"/>
+						<entity name="Family_Support"/>
+						<entity name="Effect_of_Family_Support_on_Cognitive_Vulnerabilities"/>
+						<entity name="Developmental_Change_in_Cognitive_Vulnerabilities"/>
+						<entity name="Cognitive_Vulnerabilities"/>
+					</isee:entities>
+				</isee:loop_indicator>
+				<text_box font_style="italic" text_align="center" vertical_text_align="center" font_size="9pt" appearance="transparent" uid="39" x="312.292" y="254.375" width="64.167" height="30.3333">Maladaptive
+Behaviors</text_box>
+				<text_box font_style="italic" text_align="center" vertical_text_align="center" font_size="9pt" appearance="transparent" uid="40" x="221.417" y="366.75" width="78.5835" height="40.6666">Family Response to Maladaptive
+Behaviors</text_box>
+				<text_box font_style="italic" text_align="center" vertical_text_align="center" font_size="9pt" appearance="transparent" uid="41" x="394.875" y="388.083" width="78.5835" height="40.6666">Family Response to Avoidant
+Coping</text_box>
+				<aux x="951.875" y="641.167" width="121.25" height="14" name="Cognitive Vulnerabilities MIN"/>
+				<aux x="950.375" y="677.834" width="124.25" height="14" name="Cognitive Vulnerabilities MAX"/>
+				<connector uid="47" angle="10.823">
+					<from>
+						<alias uid="46"/>
+					</from>
+					<to>Cognitive_Vulnerabilities_MIN</to>
+				</connector>
+				<connector uid="48" angle="355.314">
+					<from>
+						<alias uid="46"/>
+					</from>
+					<to>Cognitive_Vulnerabilities_MAX</to>
+				</connector>
+				<aux x="847.875" y="769.667" width="59.25" height="14" name="Current Page"/>
+				<alias font_style="italic" uid="6" x="305.25" y="91.125" width="63.25" height="26">
+					<shape type="name_only"/>
+					<of>Max_Cognitive_Vulnerabilities</of>
+				</alias>
+				<alias font_style="italic" uid="46" x="846.375" y="651" width="62.25" height="38">
+					<of>Cognitive_Vulnerabilities_AT</of>
+				</alias>
+			</view>
+			<view isee:template_view="template:1" isee:name="Overview" background="white" page_width="1066" page_height="600" zoom="115" home_view="true" type="interface">
+				<style/>
+				<isee:model_view x="503.478" y="76.5217" width="483.478" height="486.957" zoom="0.85" center_x="307" center_y="293" locked_view="true" transparent="true" show_ltm_table="false">
+					<model name="Top-Level"/>
+					<isee:highlight_list/>
+				</isee:model_view>
+				<text_box font_weight="bold" font_size="14pt" x="21.7391" y="59.1304" width="1031.3" height="45.8261">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.AppleSystemUIFont&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Arial&apos;; font-size:14pt; font-weight:600; color:#000000;&quot;&gt;Developmental Transitions&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Arial&apos;; font-size:12pt; color:#000000;&quot;&gt;Version 2-2-10&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</text_box>
+				<text_box font_size="14pt" x="24.3478" y="113.913" width="482.609" height="454.522">The Developmental Transitions &quot;proof of concept&quot; was created to illustrate how system dynamics modeling and computer simulation can be used to develop feedback theories of developmental trajectories. The main goal was to be able to develop an initial feedback theory that could be used to represent a variety of trajectories in cognitive vulnerabilities. 
+
+The model (right) represents the dynamics of cognitive vulnerabilities from 0 to 21 years old across a series of school transitions (entering elementary school, elementary to middle school, middle school to high school, and graduation). 
+
+Individual avoidant coping and maladaptive change with cognitive vulnerabilities that &quot;feed back&quot; to reinforce change in cognitive vulnerabilities (R1). Family support moderates the effects of maladaptive behaviors on cognitive vulnerabilities. Families can respond to changes in avoidant coping (B2) and maladaptive behavior (B1).
+
+The model generates different trajectories by varying individual and family characteristics and level of cognitive vulnerabilities and family support at birth. The model illustrates several characteristics of dynamical theories in human development including dynamic complexity, tipping points, path dependence, and shifts in loop dominance. 
+
+To get a more in-depth overview of the model, click on the [Overview] button at the bottom-right. To explore a set of scenarios and simulations, click on the tabs above (e.g., &quot;Scenarios&quot;, &quot;Loop scores&quot;, etc.)</text_box>
+				<button label="See overview of model" x="904.522" y="503.261" width="70.087" height="47.3913">
+					<actions>
+						<action target="story" view="0" story="45">navigate</action>
+					</actions>
+				</button>
+			</view>
+			<view isee:template_view="template:1" isee:name="Scenarios" background="white" page_width="1066" page_height="600" zoom="115" type="interface">
+				<style/>
+				<stacked_container x="460.438" y="107.207" width="598" height="233" z_index="-2">
+					<graph legend_position="right" isee:hide_border="true" width="598" height="233" type="time_series" show_grid="true" isee:tick_type="none" include_units_in_legend="false" plot_numbers="true" isee:label_pie_slices="false" num_x_grid_lines="8" num_y_grid_lines="0" num_x_labels="8" num_y_labels="3" isee:fill_intensity="0.1" to="21" from="0" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot isee:immediately_update_on_user_input="true" color="blue" isee:keep_zero_visible="false" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Cognitive_Vulnerabilities"/>
+							<scale min="0" max="100"/>
+						</plot>
+						<plot isee:immediately_update_on_user_input="true" color="red" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="Family_Support"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<button label="S2" x="49" y="219.761">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.5" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S1" x="17" y="163.616" width="64" height="30">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.25" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S3" x="49" y="262.688">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="1.25" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.1" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="12" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.5" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S4" x="49" y="303.283">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="55" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S5" x="49" y="343.877">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="40" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S6" x="49" y="384.471">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="45" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<text_box z_index="-3" font_weight="bold" padding="4" border_width="thin" border_style="solid" appearance="transparent" x="2.26087" y="116" width="449.546" height="300">Select scenarios</text_box>
+				<text_box vertical_text_align="center" x="94.7826" y="208.696" width="351.304" height="22.1304">Chronic cognitive vulnerabilities from birth</text_box>
+				<text_box vertical_text_align="center" x="91.3045" y="167.551" width="351.304" height="22.1304">Development and recovery from developmental transitions</text_box>
+				<text_box vertical_text_align="center" x="91.3045" y="251.623" width="351.304" height="22.1304">Chronic cognitive vulnerabilities from first developmental transition</text_box>
+				<text_box vertical_text_align="center" x="91.3045" y="290.218" width="351.304" height="29.0869">Early recovery from developmental transitions with late onset of chronic cognitive vulnerabilities</text_box>
+				<text_box vertical_text_align="center" x="91.3045" y="328.812" width="351.304" height="31.6956">Early recovery from developmental transitions with elementary school onset of chronic cognitive vulnerabilities</text_box>
+				<text_box vertical_text_align="center" x="91.3045" y="368.623" width="351.304" height="31.6956">Early recovery from developmental transitions with middle school onset of chronic cognitive vulnerabilities</text_box>
+				<text_box x="6" y="58.2609" width="1049.57" height="41.4783">Click on the scenarios below to see the dynamics of cognitive vulnerabilities and family support in the graph. Each scenario starts with an individual with the same level of cognitive vulnerabilities on a 0 to 100 scale, but with differences in individual characteristics (e.g., how fast maladaptive behaviors change in response to avoidant coping) and family characteristics (e.g., responsiveness, how fast they develop support)</text_box>
+			</view>
+			<view isee:template_view="template:1" isee:name="Loop scores" background="white" page_width="1066" page_height="600" zoom="115" type="interface">
+				<style/>
+				<stacked_container x="460" y="105" width="598" height="233">
+					<graph legend_position="right" isee:hide_border="true" width="598" height="233" type="time_series" show_grid="true" isee:tick_type="none" include_units_in_legend="false" plot_numbers="true" isee:label_pie_slices="false" num_x_grid_lines="8" num_y_grid_lines="0" num_x_labels="8" num_y_labels="3" isee:fill_intensity="0.1" to="21" from="0" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot isee:immediately_update_on_user_input="true" color="blue" isee:keep_zero_visible="false" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Cognitive_Vulnerabilities"/>
+							<scale min="0" max="100"/>
+						</plot>
+						<plot isee:immediately_update_on_user_input="true" color="red" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="Family_Support"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container x="460" y="333" width="551" height="265">
+					<graph legend_position="right" isee:transparent="true" isee:hide_border="true" width="551" height="265" type="time_series" show_grid="true" isee:tick_type="none" include_units_in_legend="false" plot_numbers="true" isee:label_pie_slices="false" num_x_grid_lines="8" num_y_grid_lines="0" num_x_labels="8" num_y_labels="3" isee:fill_intensity="0.1" to="21" from="0" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="B1_Loop_Score"/>
+						</plot>
+						<plot color="red" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="B2_Loop_Score"/>
+						</plot>
+						<plot color="fuchsia" isee:keep_zero_visible="true" pen_width="1" index="2" show_y_axis="true">
+							<entity name="B3_Loop_Score"/>
+						</plot>
+						<plot color="#008F44" isee:keep_zero_visible="true" pen_width="1" index="3" show_y_axis="true">
+							<entity name="R1_Loop_Score"/>
+						</plot>
+						<plot color="#FF7F00" isee:keep_zero_visible="true" pen_width="1" index="4" show_y_axis="true">
+							<entity name="L1_Loop_Score"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<isee:model_view x="104.338" y="131.435" width="388.027" height="444.067" zoom="0.8" center_x="323.5" center_y="310" locked_view="true" transparent="true" show_ltm_table="false">
+					<model name="Top-Level"/>
+					<isee:highlight_list/>
+				</isee:model_view>
+				<isee:annotation border_width="thin" border_style="none" isee:flat="false" isee:highlight_on_hover="true" launcher_label="" show_by_default="false" hide_launcher="false" x="896.739" y="119.12" width="19.5652" height="18.6957">
+					<launcher_image width="225" height="225" size_to_parent="true">data:image/png;base64,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</launcher_image>
+					<popup hide_when_editing="true" x="543.892" y="17.5849" width="174.826" height="81.4444">
+						<text>Cognitive vulnerabilities varies on a scale from 0 (none) to 100 (max). Family support varies on a scale from 0 (none) to 100 (max). </text>
+					</popup>
+				</isee:annotation>
+				<isee:annotation border_width="thin" border_style="none" isee:flat="false" isee:highlight_on_hover="true" launcher_label="" show_by_default="false" hide_launcher="false" x="896.739" y="347.164" width="19.5652" height="18.6957">
+					<launcher_image width="225" height="225" size_to_parent="true">data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAYAAAA+s9J6AAAACXBIWXMAAAsTAAALEwEAmpwYAAAfOklEQVR4nO2df2xT1xXHT5cSKQQtY6lFwIAnklmjxYsUb+o8DRgs4YdBG/LovFFYmITbzmzZhjyxSSksAymbSDvNa6d01FJJ1x+mtCtVoIv51eJKaaU+azTgsMxGCj9iI2wRS+S5BXt3f7BsNA31ee/d5/ee3/lI779z3z1+vt/37o9z77mHMcaAIAjN+IzWDhCE2SEREoTGkAgJQmNIhAShMSRCgtAYEiFBaAyJkCA0hkRIEBpzr9YOEP8nnU5DIpGAsbExuHHjBly/fh0uXrwIly9fhtHRUbh48SJcu3at5H0sFgssXLgQbDYbzJ8/HxYuXAizZ8+GWbNmwbx586CpqQkaGhrK8IsIDPdQxEz5GR4ehqGhIbh06RKcPHkSjh49qpkvbrcbVq5cCQsWLICmpiZobm6GqqoqzfwxIyRClUmn0yAIArz77rvw/PPPw+joqNYulcRms8GWLVvA4XCA0+mExsZGrV2qaEiEnMlms3DixAk4fvw47N+/X2t3uOHz+aC1tRWWLVtGXVnOkAg5EIvF4NSpU/DSSy+BIAhau6M6drsdfvSjH8GqVaugpaVFa3cMD4lQJsPDw3D48GHYu3cvTExMaO2OpnR1dcH69etJkDIhEUognU7DCy+8ALt37za98KbDYrHAzp07YcOGDTSOlACJsATFYhFOnjwJoVAIwuGw1u4YBrfbDX6/H9asWUOzrSUgEd6FXC4HfX190NHRobUrhicYDMKmTZugvr5ea1d0CYlwCslkEp577jnYu3dv2eu2WCzQ1NQES5YsAYfDAYsWLYLq6mqoqamBmTNnQl1dHdTW1gIAwIwZM2DmzJn/KyuKIty6dQsAACYmJiCXy4EoipDP5+HmzZtw4cIFGBoagrNnz0IikUAt+vOms7MTtm7dSl3VKZAI/0symYQ9e/bAgQMHVK/LYrHAV7/6VVi6dCk4nU6YP38+zJs3D+rq6lSve5JcLgfJZBKy2SycP38e3nrrLXjvvffgypUrqtfd3t4OO3fuhMWLF6telxEwvQiTySQ8+eST8Oc//1m1OhwOB6xevRra2tpgwYIFum58yWQSLly4AIODg/DGG2+ouuTi8/lg586d9GVkJiWVSrGOjg4GANwvq9XK/H4/i0QiLJ1Oa/1TFZFOp1kkEmF+v59ZrVZVnlcgEGCpVErrn6oZphOhKIosGAxyb0h2u5319PQwQRC0/omqIggCCwaDzG63c3+GwWCQiaKo9U8sO6YSYX9/P9fGY7PZWHd3d8UL724IgsC6u7uZzWbj2ovo7+/X+qeVFVOIMJFIMI/Hw62heL1eFo1Gtf5ZuqFQKLBoNMra29u5PWOPx8MSiYTWP60sVLQIC4UC6+3t5faGDgaDph67YEilUiwYDHIbP/b29rJCoaD1z1KVihVhPB5nLpdLcSNwOp0sHA6bcqyihEKhwMLhMHM6nYr/A5fLxeLxuNY/STUqUoQ8vn4ul4tFIhGtf0pFEI1GWWtrK5evYiVSUSJMpVLM6/Uq+qMffPBBNjAwoPVPqUgikYji3onH46m4IUHFiHBgYEDRn+twOEw3K6cV/f39zOFwKPq/KulFaXgRFgoF1tPTo+gPNev6lJbwmDTr7u6uiEkbQ4swk8ko6n52dHRUXNfGaKTTaUWRS16vl2UyGa1/hiIMK8J4PC57kdjhcNA6n86IRqOyu6g2m83Qs6eGFKGS8d+uXbuo66lTRFFk3d3dsv9bo85mG06EoVBI9tfPrOFlRkMQBNnri319fVq7LxlDiVDuW7Kjo4O+fgZDFEUWCARk/d/d3d1auy8JQ4iwUCjI+kNqa2tp2cHg9Pf3s9raWsn/fSAQMMzMqe5FWCgUmN/vl/wntLa2miYAuNJJJBKyIm78fr8hekC6FqEoirIi86n7WXmIoihrKaO9vV33bUG3IhRFUdYaYCgU0tp1QkXkTMx5PB5dC1GXIiwUCrK+gEadoiakEYlEKuqLqDsRyhkD2mw2Wn4wGYIgSD4lwefz6XKyRncilDoL6nK5KPTMpKRSKcm7MgKBgNZufwJdiVDqOmBra6vh4wYJZWQyGckzp3pbR9SNCPv6+iQ9SLfbzcbHx7V2m9AB4+PjzO12G3YCTxcilBoLqvfZLqL8iKIo+TAvvUzkaX4C9/DwMNx///1oe7fbDYcOHYKamhoVvSKMSD6fh40bN8LRo0fRZeLxuOYnon9Gy8qz2SysXbsWbd/a2govvvgiCZCYlpqaGnjxxRehtbUVXWbt2rWQzWZV9Ko0momwWCzC9u3bYXR0FGXvcrng5ZdfLmvSFMJ41NXVwcsvvwwulwtlPzo6Ctu3b4disaiyZ5+CVv1gKUdS2Gw2WoYgJJFKpSRt+u7p6dHMV03GhJFIBFavXo22FwSB8qETkonFYuB0OtH2AwMDsGrVKhU9mp6yizCdTsPcuXPR9pFIBNra2lT0iKhkjh07JklYqVQKGhoaVPTok5R9TLh9+3a0bSgUIgESimhra4NQKIS2l9I+uVHOvq+UI+46OjrK6RpR4UjZBlXuk77L1h2Vsh7Y2toKb7zxBi1FENzI5/Pw7W9/G44fP46yL+f6YVlEWCwWYenSpTA4OFjStra2Fs6cOUMplAnuJJNJaG5uhomJiZK2LpcLotEoVFVVqe5XWUT4zDPPwGOPPYay7e/vh3Xr1qnskfHIZrMwPj4OqVQKRkZGYHR0FERRBFEU4datWwBwe7G6uroaGhoa4Etf+hIsWrQIZs+eDRaLpSyNyQgcOXIE1q9fj7Lt7e2FRx99VGWPyiDCZDIJTU1NKNtAIAD79u1T0x3DkMvlYGxsDA4fPgz/+Mc/4N1330UHNkyltbUV7HY7uN1ucDqdZZ/90xu//OUvoaenB2WbSCTU75WpPejEBtU6nU4Kyma3DzXq6upSnDDl0y6v18sikYhpn7coiujn6/F4VPdHVRH29/ejG4bZd8bH43Gu6aaxL75QKGRKMQqCgH5Oah+bqZoIRVFEp0zu6upSyw3dk0qlmM/nK6v4phNjJaUaw9LV1YV6PlarVdUXlWoiDAaDqB/ocDhM+SZmjLFwOCzrYFu1Lp/PZ6qTCqR0S4PBoGp+qCLCVCqF/uPNmB1JFEVZBxqX4zLboVnRaBT9bNTaRKCKCLHRCWaMislkMopTRpfjMlP6AGx7VeuQKO4iTCQSmr9Z9EoqlVJ11pP3FQ6HtX5kZUFKz02N1ArcA7iffPJJlF0wGDTVelU2m4Xly5fD0NCQ1q6g8Xq9cOTIEa3dUJ2GhgYIBoMoW2z7lgRPRWO/gmabjCkUCrISmujlMsMYURRF9GHCvL+GXEWIXecy03iDMWkR/Hq87Ha7KY6XxK5r+3w+rvVyEyH2K+hyuXhVaQikBCxIvaxWK3M6nczlcjGn08ksFotqdZllEg07acbza8hNhJ2dnSjn9XLWYznIZDJc1wHdbjfr6elhgiCwTCbDxsfHmSiK/7vGx8dZJpNhgiCwnp4eyQfilrrMsJyEPQO3s7OTW51cRDg+Po5yvLW1lUd1hkFuuuepl8/nY/F4XHIyk0KhwOLxOLc1SbP0YrBfQ15ddC4ixEbHmOkrGI/HFTd6u93ObVJEEATmdDoV+2SG/xCbeo1XFI1iERYKBZTDTqeTh7+GQenXx+12c59Blpv5+M7LLL0Z7AuLR6o1xSLE9qHNsvDLmLSAhekuj8ejah49pQHj8XhcNd/0QjgcRj0LHoHvikWI2S+odhS63pBysPHUy+FwqJ7IslAoKAqd0/Kg3HKB3QXEY7+hIhFiw33UjEDXI1IzyN55qREWNR1KvtZmGVpg5zqUhl8qClt74YUXUHYPPfSQkmoMRSwWg5GREVllg8Fg2Q64amxshK6uLlllBUGAZDLJ2SP9gW23WB3cFSUKxqyBeb1eRW8Jo6GkK1rufOqZTEa2r2aYJWWMMa/XW/JZWCwWRXXI/hLGYjHU0XE/+clP5FZhSF599VVZ5UKhUNlPRKuvr4f29nZZZQVB4OyNPsG032vXrkEsFpNdh2wRRiKRkjY2mw2+8Y1vyK3CcKTTafjggw9klf3BD37A2Rsc3/rWt2SVO3/+PGdP9InL5QKbzVbSDqOHuyFbhL/+9a9L2mDPGq0UxsbGUL2Dqfj9fs1OG//6178uq5zcca/RqKqqQrXjvXv3yq5Dlgixn14t0kxpyblz52SVc7vdnD3B84UvfEFWuRs3bvB1RMdg2vHExITsLqksEZ46daqkjd1uN11OwfHxcVnlVq5cydkTPHLHoR999JG22W3LSEtLC9jt9pJ2GF1MhywRHjhwoKTNI488IufWhmbTpk3Q2dmJTtUMcPtlpXXiG8yYZyofffSRqb6GmPaM0cV03Cu1QDabRR3RsGLFClkOGZn6+nrYs2cP/OY3v4GbN2/C2NgYCIIAly5dgn/+85/w9ttvf2Is9fDDD2vk7f8RRVFWuerqas6e6BdMex4aGoJsNgv19fWS7i1ZhCdOnChpY7VaTdcVvZOqqiqoqamBxsbGjy2+F4tFuHnzJgwPD8O5c+dgfHwctm3bpqGnt7l27ZrkMp/97GdNJcKWlhawWq1w5cqVT7U7ceIEfO9735N0b8ndUUx+t+985ztSb2sKJsXZ0tICW7ZsgZ/+9Kead0Xljuuqq6tNl+kJ066x+Q/vRLII9+/fX9Jmw4YNkh0htEHuUsOcOXM4e6J/MO0ao4+pSBIhNl7wy1/+smRHCG14//33ZZXDZl2uJBwOB8ounU5Luq8kEWJClZxOpynfkkbl9ddfl1Xum9/8Jl9HDEBDQwNKiKdPn5Z0X0kixMyKrl27VpIDhHZcvXoVXnvtNVllFy1axNkbY4AZF0o94FmSCJ9//vmSNsuWLZPkAKEdf/3rX2WVs9vtsHjxYs7eGANM+8bo5E7QIiwWi6h0zWZ9QxqNXC4HgUBAVtnvf//7nL0xDpj2PTo6KmnWGS3CM2fOlLSxWq1l25RKKOOPf/yj7LJmXoJqbGwEq9Va0k7KrDNahIlEoqRNc3MzumJCO5LJJOzevVtW2QcffNDUgRgAuHYuZVyIFuGlS5dK2mgZiEzg6ejokF328ccf5+iJMVm6dGlJG4xeJkGL8OTJkyVtaH1Q/xw8eBCOHj0qq6zNZoM1a9Zw9sh4OJ3OkjYYvUxyD2OMoQzvuaekTTweN+2smRG4evWqopyQ4XBYclxkJRKLxVBCREpL/s766Zg3bx7P2xGc2bx5s+yyLpeLBPhfeE8+okSICcOxWCxQV1en2CFCHZ555hlZwcWTPPXUUxy9MTZ1dXVgsVhK2mHD11AixMyMNjU1oSokyk8ymVR03k8gEDD9jOhUMO0doxsApAjHxsZK2ixZsgRVIVFeisWipJ3+U6mtrYXf/va3HD2qDDDtHaMbAKQIMccYYCPMifLy4x//WNam3Un+9re/ab7nUY9g2jv2+A+UCK9fv17ShsLV9MeRI0dk7W+bJBAIQFtbG0ePKgdMe8foBgApwosXL5a0MdNRB0YgnU7D+vXrZZe32Wzwu9/9jqNHlQWmvWN0A4AU4eXLl0vaUJdFXyg98/XNN9803fEVUsC0d4xuAJAixOyemDlzJqpCQn12794teU/bnfT29lLQRQkw7R2jGwCO3VFaI9QH77zzjqLZTI/HA48++ihHjyoTTHvHdkdRYWuYkLVUKqUoJIpQTj6fV9wjGR8fpxcqgnQ6DXPnzi1phwld4xa2hhEqoS4bN25UVD4ajZIANYCbCO+9V/I5wgRH/vSnP8neHQEAsGvXLlOlsVPKjBkzuN2LW3eUujHakUwmFYUNOp1O2UcfmpVcLgef+9znStphuqPcRCiKIi1TaITSoQCN56WDHX+XdUx48+ZNXrciJLB161ZF5cPhMAlQBjzbOzcRFgoFXrcikBw8eFB2Oi4AAJ/PR3sEZcKzvXPrjqbTaTp5u4xgp8jvhsVigVQqRVExMtHlEgV2Kz/BB6VhaW+//TYJUCegRIjZRTwxMaHYGQLHE088QWFpGoNp7xjdACBFuHDhwpI2uVwOVSGhjHQ6LfvkbAAKS+MFpr1jdAOAFCEmp7nclMuENH7+858rKi83/wTxcTDtHaMbAKQI58+fX9Imn8+jKiTkMzw8DOFwWHb5aDRKa7mcwLR3jG4AOHZHaZ1QfXp7e2WXDQQCFJbGEUx759odnT17dkmbCxcuoCok5FEsFiEYDMouT7vk+YJp7xjdACBFOGvWrJI2SmbriNJIOVZ9KuFwmJYjOINp7xjdACBFiDlZ++zZs6gKCXl88MEHsstSVAx/MO0deyI9SoQ8Dzol5PH3v/9dVrnu7m7OnhAAfA/E5poQhrYzqYfcnRLRaJQmZDjDcxsTAOeEMNgTh4nyQYcy8yeZTHK9H1qEbre7pA32iDdCGkrWYKlnwp9sNlvSBqOXSdAixGThVTJ5QNwduWuwmNzqhHQEQShpIyVrNVqECxYsKGmjZBqduDsffvihrHKf//znOXtCANweZ5cCo5dJ0CLEzPScOXMGXTGhPth1KkIamHYuZSyOFmFzc3NJmytXrnAftBKEnkgmk3DlypWSdlK2iqFFWFVVhYoKp/A1opLBtG/s7olJJC1RbNmypaTN6dOnJTlAEEYC077b29sl3VOSCDH93MOHD0tygCCMBKZ9P/DAA5LuKUmETqezpM3Q0BBcvXpVkhOEOvz73//W2oWKIp1OowK3ly1bJum+kkTY2NiIsqP1Qr7IPcVu9erVnD0xN9h2LfUcV8kJJHw+X8kUzK+//jqlWeZMKpVCLRJPUl1dLWnBmCgNpivq9/sl3xcdwD3JwYMHwev1fqqN1WqlEDai4pg/f37J5YlwOCx565hkEWazWbjvvvtK2gmCAC0tLZKcIQi9EovFUHMimUwG6uvrJd1b8i6K+vp61CzpqVOnpN6aIHQLpj07HA7JAgSQuZUJsw7yl7/8Rc6tCUKXYNqz1PXBSWSJcMWKFSVtRkZGIBaLybk9QeiKWCwGIyMjJe0wupgOWSLEjvUikYic2xOErsC049raWtlzILJ31mPOLunt7YVisSi3CoLQnGKxiDrvtbOzU3YdskWIyQo0OjoKg4ODcqsgCM0ZHByE0dHRknZKsmTJFmFLSwsq68xTTz0ltwqC0BxM+7VYLIqW4xQd9LRz586SNuFwGNLptJJqCEIT0uk0KvfH448/rqgeRSJ8+OGHUXavvPKKkmoIQhOw7fahhx5SVI/kiJmpfPe734XXXnvtU22sViv861//ooxAMikWizAyMiL51LW6ujp00D3xcfL5PHzxi18sGabm8Xjg1VdfVVYZU8jAwAADgJJXOBxWWpVp8fv9qGc83RWNRrV235CEw2HU8x0YGFBcl+IvYbFYhHvvLb0Zw+l0wvvvv6+kKtMi9/RtAICuri7YtWsXR2/MwVe+8hXUrpVCoaA42Y7iE7irqqpQKbsEQYBjx44prY4gVOfYsWMoAQaDQS7Zrrgcg//DH/4QZbd7924e1RGEqmDbKbbdl4KLCOvq6lARA4ODg/Q1JHRNJBJBBZh0dnZySzHALSHM1q1bUXb0NST0DHb8jG3vGLiJsLGxEXw+X0m7wcFBOHLkCK9qCYIbR44cgffee6+knc/n47r0wzU1GiaCBgBgx44dijINEQRv8vk87NixA2WLbedYuIqwsbERddDNyMgIPPvsszyrJghFPPvss6g9g36/n3sAhOJ1wqkkk0l0muBUKiX5eDgzQuuE6pJOp2Hu3Lko20QiwV2EXL+EALe/hoFAAGVL+dQJPbBnzx6UXSAQUCcMUHHMzTSkUikKq+II9llOd3V1dWntvq6JRqPoZ5lKpVTxgfuXEOD2CcSYKBqA231smqQhtCCfz6MP6w0Gg6oNnVQRIQDAtm3bUCmihoaGYN++fWq5QRB3Zd++fajcEjabDbZt26aaH6qJsKamBp5++mmU7e7du+lkNpWgM36mJxaLoQNHnn76aVW34akmQgCAdevWgcfjQdlu3bqVuqV3oba2VnZZzGnpZiOfz6MjXjweD6xbt05Vf7gvUUxFypJFIBCgruk0vPPOO/CHP/xBUpkPP/wQLBYLPPHEE7JOha5kfvazn6HnLNRYkvgEqkz3TKG3txc9A9Xf318OlwiT0t/fj26LoVCoLD6p/iUEuD0uWbp0KSo6vba2Fs6cOUPHMhDckdIrc7lcEI1GuewXLIWqY8JJqqqqIBQKoWwnJiZgy5YtND4kuJLP5+Gxxx5D24dCobIIEKBMIgQAWLx4MVqIg4OD6KgbgsDwq1/9Co4fP46y7e3thcWLF6vs0R2UpdN7Bx6PR3d9cqKyCYVC6Dbn9XrL7l9ZxoR3cvXqVUmRBwMDA4qOGCfMzbFjxyS1Hy02FZStOzrJnDlzYGBgAG2/evVqWsgnZBGLxSQJMBKJaLKrp+wiBLidPKOnpwdt7/F4IJlMqugRUWmk02l0oAgAQE9PD7S1tano0adQ9g7wfykUCszr9aL76i6Xi2UyGa3cJQxEJpNhLpdL0jiwUCho5m/Zx4R3ksvloLm5GZV6CgCgtbUVDh06xO2UK6LyyOVysHHjRvRMqM1mgzNnzmjapjQVIQDA8PAw3H///Wh7t9sNhw4dorwWxCfI5/OwceNGOHr0KLpMPB4v73LENGgyJryTxYsXS0qrffToUdi8eTMt5hMfI5/Pw+bNmyUJMBKJaC5AANBuTDiVvr4+STvG3W43Gx8f19ptQgeMj48zt9stqf309fVp7fb/0I0IGWOsu7tb0oNsbW2lyRqTk8lkWGtrq6R2093drbXbH0NXImSMsUAgIOmBulwulkgktHab0IBUKiVpFhQAWCAQ0NrtT6A7ERYKBcn5+Gw2GxMEQWvXiTIiCAKz2+2S2onf79d0KeJu6E6EjN0Wos/nk/SAAfgkbCT0TyQSkdw22tvbmSiKWrs+LboUIWOMiaIoaTF/8qKg78pGSjD25OX1enUrQMZ0LELGbguxvb1d8kP3+/26fuiEdERRZB0dHRX1BZxE1yJk7HbXVM7DpwmbyiGRSEieATXSy1j3ImTsthClzppOXnRmjbHp7+9ntbW1kv/3QCCgy0mY6TCECCeRuo44eXV0dBjijUj8H1EUZb949bYOWApDiZAx6ZE1k5fD4aBlDIMgCAJzOp2y/mc9RcJgMZwIGZM3RT157dq1i76KOkUURdbV1SX7v41EIlr/BFkYUoSMMRaPx5nNZpP9VaRsUPoiGo0yh8Mh6/+02WwsHo9r/RNkY1gRMnY7cFfOWuKdY0W10l0ROFKplOQIqTsvr9dr+EB+Q4twkp6eHtl/IgCwnp4e6qKWGVEUWTAYVPy/GWUG9NOoCBEyxtjAwICiP9Rut9NyRpno7++XHPdZKeO/6agYETLGWDqdVtQ9BQDmdDpJjCoRiUQk73qYenk8noobQlSUCCeRE1849XK5XBX1ttWSSCQiK+Jl6lWpccEVKULGbs+e8vjjnU4nC4fDNGaUSKFQYOFwWPZ639QXopFnP0tRsSJk7HZD4PFVBABmtVpZMBisuK4Qb1KpFAsGg8xqtXJ57r29vRUx+fJpVLQIJ0kkEpJyYJS6vF4vi0ajFd84sBQKBRaNRmXteLnb5fF4TBOAbwoRTsJjVu7Oy2azse7ubtOGwwmCwLq7u2UHTdytx2G2iTFTiZAxPutTZhakIAisp6eH68ts8goGg6Yce5tOhJOkUinZUfqYt7nf72cDAwOGH0OmUik2MDDA/H4/t3He1CsQCBj+OSlB8xO4tSaZTEIwGIRgMKhaHQ6HA1avXg1tbW2wYMECfRw4exeSySRcuHABTp8+DW+++SYIgqBaXX6/H3bs2GH61OimF+EkyWQSfv/738P+/ftVr8tisUBzczMsXboUvva1r8F9990HjY2NZc2HkMvlIJlMQjabhfPnz8Nbb70FgiCg84IowefzwS9+8Qtdv4zKCYlwCslkEp577jnYu3dv2eu2WCzQ1NQES5YsAYfDAYsWLYLq6mqoqamBmTNnQl1dHdTW1gIAwIwZM2DmzJn/KyuKIty6dQsAACYmJiCXy4EoipDP5+HmzZtw4cIFGBoagrNnz0IikYBr166V/fd1dnbC1q1bTf/lmwqJ8C7kcjno6+uDjo4OrV0xPMFgEDZt2gT19fVau6JLSIQlKBaLcPLkSQiFQhAOh7V2xzC43W7w+/2wZs0aqKqq0todXUMilEA6nYZXXnkF9uzZo0l3Tu9YLBbYuXMnbNiwgbqcEiARymR4eBgOHz4Me/fuhYmJCa3d0ZTu7m5YtWoVtLS0aO2KISERciAWi8GpU6fgpZdeUnVKXy/Y7XZ45JFHYMWKFSQ8DpAIOZPNZuHEiRNw/Pjxsix3lAu/3w/Lly+H5cuXw5w5c7R2p6IgEapMOp2G06dPw7lz5+DAgQNlWYdTis1mg/b2dnjggQfA6XTS+E5lSIQaMDw8DENDQ3Dp0iU4efKkpBTPvHG73bBy5UpYsGABNDU1QXNzM81mlhkSoY5Ip9OQSCRgbGwMbty4AdevX4eLFy/C5cuXYXR0FC5evIialbVYLLBw4UKw2Wwwf/58WLhwIcyePRtmzZoF8+bNg6amJmhoaCjDLyIwkAgJQmM+o7UDBGF2SIQEoTEkQoLQGBIhQWgMiZAgNIZESBAaQyIkCI0hERKExvwH4ncXy6wjeCYAAAAASUVORK5CYII=</launcher_image>
+					<popup hide_when_editing="true" x="821.718" y="477.793" width="227.87" height="109.479">
+						<text>Loop scores correspond to the feedback loops identified in the model (e.g., B1, B2, ..., R1, L1). Loop scores vary from 0 to +100 for reinforcing loops and 0 to -100 for balancing loops. The magnitude is a percent of overall influence in the model.</text>
+					</popup>
+				</isee:annotation>
+				<button label="S1" x="49" y="181.5">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.5" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S2" x="49" y="222.094">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.25" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S3" x="49" y="262.688">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="1.25" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.1" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="12" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.5" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S4" x="49" y="303.283">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="55" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S5" x="49" y="343.877">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="40" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S6" x="49" y="384.471">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="45" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<text_box z_index="-3" font_weight="bold" padding="4" border_width="thin" border_style="solid" appearance="transparent" x="4" y="116" width="92.1546" height="300">Select scenarios</text_box>
+				<text_box x="6" y="58.2609" width="1049.57" height="41.4783">Click on the scenarios and see the trajectories for cognitive vulnerability and family support in the top graph and the loop scores in the lower graph. Loop scores measure how much the loop contributes to the overall behavior of a feedback system as a percent of overall change. Positive values indicate reinforcing loops, while negative values indicate balancing loops. Reinforcing loops have an R prefix, balancing loops a B prefix, and loops that can be reinforcing or balancing an L prefix. Hover over the loop label in the diagram on the left to see the loop highlighted for that label. </text_box>
+			</view>
+			<view isee:template_view="template:1" isee:name="Parameters" background="white" page_width="1066" page_height="600" zoom="115" type="interface">
+				<style/>
+				<stacked_container x="460" y="105" width="598" height="233" z_index="-4">
+					<graph legend_position="right" isee:hide_border="true" width="598" height="233" type="time_series" show_grid="true" isee:tick_type="none" include_units_in_legend="false" plot_numbers="true" isee:label_pie_slices="false" num_x_grid_lines="8" num_y_grid_lines="0" num_x_labels="8" num_y_labels="3" isee:fill_intensity="0.1" to="21" from="0" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot isee:immediately_update_on_user_input="true" color="blue" isee:keep_zero_visible="false" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Cognitive_Vulnerabilities"/>
+							<scale min="0" max="100"/>
+						</plot>
+						<plot isee:immediately_update_on_user_input="true" color="red" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="Family_Support"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container x="460" y="333" width="551" height="265">
+					<graph legend_position="right" isee:transparent="true" isee:hide_border="true" width="551" height="265" type="time_series" show_grid="true" isee:tick_type="none" include_units_in_legend="false" plot_numbers="true" isee:label_pie_slices="false" num_x_grid_lines="8" num_y_grid_lines="0" num_x_labels="8" num_y_labels="3" isee:fill_intensity="0.1" to="21" from="0" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="B1_Loop_Score"/>
+						</plot>
+						<plot color="red" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="B2_Loop_Score"/>
+						</plot>
+						<plot color="fuchsia" isee:keep_zero_visible="true" pen_width="1" index="2" show_y_axis="true">
+							<entity name="B3_Loop_Score"/>
+						</plot>
+						<plot color="#008F44" isee:keep_zero_visible="true" pen_width="1" index="3" show_y_axis="true">
+							<entity name="R1_Loop_Score"/>
+						</plot>
+						<plot color="#FF7F00" isee:keep_zero_visible="true" pen_width="1" index="4" show_y_axis="true">
+							<entity name="L1_Loop_Score"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<slider num_ticks="2" label_side="left" input_expands="false" input_width="120" x="136.848" y="134.913" width="291.261" height="50" isee:navigate_to="false" show_name="true">
+					<entity name="Initial_Cognitive_Vulnerabilities"/>
+					<reset_to after="never">0</reset_to>
+				</slider>
+				<slider num_ticks="2" label_side="left" input_expands="false" input_width="120" x="137.109" y="308.033" width="291.261" height="50" isee:navigate_to="false" show_name="true">
+					<entity name="Initial_Family_Support"/>
+					<reset_to after="never">0</reset_to>
+				</slider>
+				<slider num_ticks="2" label_side="left" input_expands="false" input_width="120" x="136.848" y="187.875" width="291.261" height="50" min="0.1" max="3" isee:navigate_to="false" show_name="true">
+					<entity name="Cognitive_Vulnerabilities_AT"/>
+					<reset_to after="never">0</reset_to>
+				</slider>
+				<slider num_ticks="2" label_side="left" input_expands="false" input_width="120" x="137.109" y="359.471" width="291.261" height="50" min="0.1" max="25" isee:navigate_to="false" show_name="true">
+					<entity name="Family_Response_Delay"/>
+					<reset_to after="never">0</reset_to>
+				</slider>
+				<slider num_ticks="2" label_side="left" input_expands="false" input_width="120" x="137.109" y="410.91" width="291.261" height="50" min="0.1" max="25" isee:navigate_to="false" show_name="true">
+					<entity name="Family_Support_AT"/>
+					<reset_to after="never">0</reset_to>
+				</slider>
+				<slider num_ticks="2" label_side="left" input_expands="false" input_width="120" x="136.848" y="240.836" width="291.261" height="50" min="0.1" max="3" isee:navigate_to="false" show_name="true">
+					<entity name="Onset_of_Maladaptive_Behaviors_Delay"/>
+					<reset_to after="never">0</reset_to>
+				</slider>
+				<button label="" x="133.652" y="493.695" width="64" height="30">
+					<actions>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="" x="208.87" y="493.695" width="64" height="30">
+					<actions>
+						<action>start_stella_live</action>
+					</actions>
+				</button>
+				<button label="" x="286.696" y="493.695" width="64" height="30">
+					<actions>
+						<action>stop_stella_live</action>
+					</actions>
+				</button>
+				<isee:annotation border_width="thin" border_style="none" isee:flat="false" isee:highlight_on_hover="true" launcher_label="" show_by_default="false" hide_launcher="false" x="436.826" y="471.522" width="19.5652" height="18.6957">
+					<launcher_image width="225" height="225" size_to_parent="true">data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAYAAAA+s9J6AAAACXBIWXMAAAsTAAALEwEAmpwYAAAfOklEQVR4nO2df2xT1xXHT5cSKQQtY6lFwIAnklmjxYsUb+o8DRgs4YdBG/LovFFYmITbzmzZhjyxSSksAymbSDvNa6d01FJJ1x+mtCtVoIv51eJKaaU+azTgsMxGCj9iI2wRS+S5BXt3f7BsNA31ee/d5/ee3/lI779z3z1+vt/37o9z77mHMcaAIAjN+IzWDhCE2SEREoTGkAgJQmNIhAShMSRCgtAYEiFBaAyJkCA0hkRIEBpzr9YOEP8nnU5DIpGAsbExuHHjBly/fh0uXrwIly9fhtHRUbh48SJcu3at5H0sFgssXLgQbDYbzJ8/HxYuXAizZ8+GWbNmwbx586CpqQkaGhrK8IsIDPdQxEz5GR4ehqGhIbh06RKcPHkSjh49qpkvbrcbVq5cCQsWLICmpiZobm6GqqoqzfwxIyRClUmn0yAIArz77rvw/PPPw+joqNYulcRms8GWLVvA4XCA0+mExsZGrV2qaEiEnMlms3DixAk4fvw47N+/X2t3uOHz+aC1tRWWLVtGXVnOkAg5EIvF4NSpU/DSSy+BIAhau6M6drsdfvSjH8GqVaugpaVFa3cMD4lQJsPDw3D48GHYu3cvTExMaO2OpnR1dcH69etJkDIhEUognU7DCy+8ALt37za98KbDYrHAzp07YcOGDTSOlACJsATFYhFOnjwJoVAIwuGw1u4YBrfbDX6/H9asWUOzrSUgEd6FXC4HfX190NHRobUrhicYDMKmTZugvr5ea1d0CYlwCslkEp577jnYu3dv2eu2WCzQ1NQES5YsAYfDAYsWLYLq6mqoqamBmTNnQl1dHdTW1gIAwIwZM2DmzJn/KyuKIty6dQsAACYmJiCXy4EoipDP5+HmzZtw4cIFGBoagrNnz0IikUAt+vOms7MTtm7dSl3VKZAI/0symYQ9e/bAgQMHVK/LYrHAV7/6VVi6dCk4nU6YP38+zJs3D+rq6lSve5JcLgfJZBKy2SycP38e3nrrLXjvvffgypUrqtfd3t4OO3fuhMWLF6telxEwvQiTySQ8+eST8Oc//1m1OhwOB6xevRra2tpgwYIFum58yWQSLly4AIODg/DGG2+ouuTi8/lg586d9GVkJiWVSrGOjg4GANwvq9XK/H4/i0QiLJ1Oa/1TFZFOp1kkEmF+v59ZrVZVnlcgEGCpVErrn6oZphOhKIosGAxyb0h2u5319PQwQRC0/omqIggCCwaDzG63c3+GwWCQiaKo9U8sO6YSYX9/P9fGY7PZWHd3d8UL724IgsC6u7uZzWbj2ovo7+/X+qeVFVOIMJFIMI/Hw62heL1eFo1Gtf5ZuqFQKLBoNMra29u5PWOPx8MSiYTWP60sVLQIC4UC6+3t5faGDgaDph67YEilUiwYDHIbP/b29rJCoaD1z1KVihVhPB5nLpdLcSNwOp0sHA6bcqyihEKhwMLhMHM6nYr/A5fLxeLxuNY/STUqUoQ8vn4ul4tFIhGtf0pFEI1GWWtrK5evYiVSUSJMpVLM6/Uq+qMffPBBNjAwoPVPqUgikYji3onH46m4IUHFiHBgYEDRn+twOEw3K6cV/f39zOFwKPq/KulFaXgRFgoF1tPTo+gPNev6lJbwmDTr7u6uiEkbQ4swk8ko6n52dHRUXNfGaKTTaUWRS16vl2UyGa1/hiIMK8J4PC57kdjhcNA6n86IRqOyu6g2m83Qs6eGFKGS8d+uXbuo66lTRFFk3d3dsv9bo85mG06EoVBI9tfPrOFlRkMQBNnri319fVq7LxlDiVDuW7Kjo4O+fgZDFEUWCARk/d/d3d1auy8JQ4iwUCjI+kNqa2tp2cHg9Pf3s9raWsn/fSAQMMzMqe5FWCgUmN/vl/wntLa2miYAuNJJJBKyIm78fr8hekC6FqEoirIi86n7WXmIoihrKaO9vV33bUG3IhRFUdYaYCgU0tp1QkXkTMx5PB5dC1GXIiwUCrK+gEadoiakEYlEKuqLqDsRyhkD2mw2Wn4wGYIgSD4lwefz6XKyRncilDoL6nK5KPTMpKRSKcm7MgKBgNZufwJdiVDqOmBra6vh4wYJZWQyGckzp3pbR9SNCPv6+iQ9SLfbzcbHx7V2m9AB4+PjzO12G3YCTxcilBoLqvfZLqL8iKIo+TAvvUzkaX4C9/DwMNx///1oe7fbDYcOHYKamhoVvSKMSD6fh40bN8LRo0fRZeLxuOYnon9Gy8qz2SysXbsWbd/a2govvvgiCZCYlpqaGnjxxRehtbUVXWbt2rWQzWZV9Ko0momwWCzC9u3bYXR0FGXvcrng5ZdfLmvSFMJ41NXVwcsvvwwulwtlPzo6Ctu3b4disaiyZ5+CVv1gKUdS2Gw2WoYgJJFKpSRt+u7p6dHMV03GhJFIBFavXo22FwSB8qETkonFYuB0OtH2AwMDsGrVKhU9mp6yizCdTsPcuXPR9pFIBNra2lT0iKhkjh07JklYqVQKGhoaVPTok5R9TLh9+3a0bSgUIgESimhra4NQKIS2l9I+uVHOvq+UI+46OjrK6RpR4UjZBlXuk77L1h2Vsh7Y2toKb7zxBi1FENzI5/Pw7W9/G44fP46yL+f6YVlEWCwWYenSpTA4OFjStra2Fs6cOUMplAnuJJNJaG5uhomJiZK2LpcLotEoVFVVqe5XWUT4zDPPwGOPPYay7e/vh3Xr1qnskfHIZrMwPj4OqVQKRkZGYHR0FERRBFEU4datWwBwe7G6uroaGhoa4Etf+hIsWrQIZs+eDRaLpSyNyQgcOXIE1q9fj7Lt7e2FRx99VGWPyiDCZDIJTU1NKNtAIAD79u1T0x3DkMvlYGxsDA4fPgz/+Mc/4N1330UHNkyltbUV7HY7uN1ucDqdZZ/90xu//OUvoaenB2WbSCTU75WpPejEBtU6nU4Kyma3DzXq6upSnDDl0y6v18sikYhpn7coiujn6/F4VPdHVRH29/ejG4bZd8bH43Gu6aaxL75QKGRKMQqCgH5Oah+bqZoIRVFEp0zu6upSyw3dk0qlmM/nK6v4phNjJaUaw9LV1YV6PlarVdUXlWoiDAaDqB/ocDhM+SZmjLFwOCzrYFu1Lp/PZ6qTCqR0S4PBoGp+qCLCVCqF/uPNmB1JFEVZBxqX4zLboVnRaBT9bNTaRKCKCLHRCWaMislkMopTRpfjMlP6AGx7VeuQKO4iTCQSmr9Z9EoqlVJ11pP3FQ6HtX5kZUFKz02N1ArcA7iffPJJlF0wGDTVelU2m4Xly5fD0NCQ1q6g8Xq9cOTIEa3dUJ2GhgYIBoMoW2z7lgRPRWO/gmabjCkUCrISmujlMsMYURRF9GHCvL+GXEWIXecy03iDMWkR/Hq87Ha7KY6XxK5r+3w+rvVyEyH2K+hyuXhVaQikBCxIvaxWK3M6nczlcjGn08ksFotqdZllEg07acbza8hNhJ2dnSjn9XLWYznIZDJc1wHdbjfr6elhgiCwTCbDxsfHmSiK/7vGx8dZJpNhgiCwnp4eyQfilrrMsJyEPQO3s7OTW51cRDg+Po5yvLW1lUd1hkFuuuepl8/nY/F4XHIyk0KhwOLxOLc1SbP0YrBfQ15ddC4ixEbHmOkrGI/HFTd6u93ObVJEEATmdDoV+2SG/xCbeo1XFI1iERYKBZTDTqeTh7+GQenXx+12c59Blpv5+M7LLL0Z7AuLR6o1xSLE9qHNsvDLmLSAhekuj8ejah49pQHj8XhcNd/0QjgcRj0LHoHvikWI2S+odhS63pBysPHUy+FwqJ7IslAoKAqd0/Kg3HKB3QXEY7+hIhFiw33UjEDXI1IzyN55qREWNR1KvtZmGVpg5zqUhl8qClt74YUXUHYPPfSQkmoMRSwWg5GREVllg8Fg2Q64amxshK6uLlllBUGAZDLJ2SP9gW23WB3cFSUKxqyBeb1eRW8Jo6GkK1rufOqZTEa2r2aYJWWMMa/XW/JZWCwWRXXI/hLGYjHU0XE/+clP5FZhSF599VVZ5UKhUNlPRKuvr4f29nZZZQVB4OyNPsG032vXrkEsFpNdh2wRRiKRkjY2mw2+8Y1vyK3CcKTTafjggw9klf3BD37A2Rsc3/rWt2SVO3/+PGdP9InL5QKbzVbSDqOHuyFbhL/+9a9L2mDPGq0UxsbGUL2Dqfj9fs1OG//6178uq5zcca/RqKqqQrXjvXv3yq5Dlgixn14t0kxpyblz52SVc7vdnD3B84UvfEFWuRs3bvB1RMdg2vHExITsLqksEZ46daqkjd1uN11OwfHxcVnlVq5cydkTPHLHoR999JG22W3LSEtLC9jt9pJ2GF1MhywRHjhwoKTNI488IufWhmbTpk3Q2dmJTtUMcPtlpXXiG8yYZyofffSRqb6GmPaM0cV03Cu1QDabRR3RsGLFClkOGZn6+nrYs2cP/OY3v4GbN2/C2NgYCIIAly5dgn/+85/w9ttvf2Is9fDDD2vk7f8RRVFWuerqas6e6BdMex4aGoJsNgv19fWS7i1ZhCdOnChpY7VaTdcVvZOqqiqoqamBxsbGjy2+F4tFuHnzJgwPD8O5c+dgfHwctm3bpqGnt7l27ZrkMp/97GdNJcKWlhawWq1w5cqVT7U7ceIEfO9735N0b8ndUUx+t+985ztSb2sKJsXZ0tICW7ZsgZ/+9Kead0Xljuuqq6tNl+kJ066x+Q/vRLII9+/fX9Jmw4YNkh0htEHuUsOcOXM4e6J/MO0ao4+pSBIhNl7wy1/+smRHCG14//33ZZXDZl2uJBwOB8ounU5Luq8kEWJClZxOpynfkkbl9ddfl1Xum9/8Jl9HDEBDQwNKiKdPn5Z0X0kixMyKrl27VpIDhHZcvXoVXnvtNVllFy1axNkbY4AZF0o94FmSCJ9//vmSNsuWLZPkAKEdf/3rX2WVs9vtsHjxYs7eGANM+8bo5E7QIiwWi6h0zWZ9QxqNXC4HgUBAVtnvf//7nL0xDpj2PTo6KmnWGS3CM2fOlLSxWq1l25RKKOOPf/yj7LJmXoJqbGwEq9Va0k7KrDNahIlEoqRNc3MzumJCO5LJJOzevVtW2QcffNDUgRgAuHYuZVyIFuGlS5dK2mgZiEzg6ejokF328ccf5+iJMVm6dGlJG4xeJkGL8OTJkyVtaH1Q/xw8eBCOHj0qq6zNZoM1a9Zw9sh4OJ3OkjYYvUxyD2OMoQzvuaekTTweN+2smRG4evWqopyQ4XBYclxkJRKLxVBCREpL/s766Zg3bx7P2xGc2bx5s+yyLpeLBPhfeE8+okSICcOxWCxQV1en2CFCHZ555hlZwcWTPPXUUxy9MTZ1dXVgsVhK2mHD11AixMyMNjU1oSokyk8ymVR03k8gEDD9jOhUMO0doxsApAjHxsZK2ixZsgRVIVFeisWipJ3+U6mtrYXf/va3HD2qDDDtHaMbAKQIMccYYCPMifLy4x//WNam3Un+9re/ab7nUY9g2jv2+A+UCK9fv17ShsLV9MeRI0dk7W+bJBAIQFtbG0ePKgdMe8foBgApwosXL5a0MdNRB0YgnU7D+vXrZZe32Wzwu9/9jqNHlQWmvWN0A4AU4eXLl0vaUJdFXyg98/XNN9803fEVUsC0d4xuAJAixOyemDlzJqpCQn12794teU/bnfT29lLQRQkw7R2jGwCO3VFaI9QH77zzjqLZTI/HA48++ihHjyoTTHvHdkdRYWuYkLVUKqUoJIpQTj6fV9wjGR8fpxcqgnQ6DXPnzi1phwld4xa2hhEqoS4bN25UVD4ajZIANYCbCO+9V/I5wgRH/vSnP8neHQEAsGvXLlOlsVPKjBkzuN2LW3eUujHakUwmFYUNOp1O2UcfmpVcLgef+9znStphuqPcRCiKIi1TaITSoQCN56WDHX+XdUx48+ZNXrciJLB161ZF5cPhMAlQBjzbOzcRFgoFXrcikBw8eFB2Oi4AAJ/PR3sEZcKzvXPrjqbTaTp5u4xgp8jvhsVigVQqRVExMtHlEgV2Kz/BB6VhaW+//TYJUCegRIjZRTwxMaHYGQLHE088QWFpGoNp7xjdACBFuHDhwpI2uVwOVSGhjHQ6LfvkbAAKS+MFpr1jdAOAFCEmp7nclMuENH7+858rKi83/wTxcTDtHaMbAKQI58+fX9Imn8+jKiTkMzw8DOFwWHb5aDRKa7mcwLR3jG4AOHZHaZ1QfXp7e2WXDQQCFJbGEUx759odnT17dkmbCxcuoCok5FEsFiEYDMouT7vk+YJp7xjdACBFOGvWrJI2SmbriNJIOVZ9KuFwmJYjOINp7xjdACBFiDlZ++zZs6gKCXl88MEHsstSVAx/MO0deyI9SoQ8Dzol5PH3v/9dVrnu7m7OnhAAfA/E5poQhrYzqYfcnRLRaJQmZDjDcxsTAOeEMNgTh4nyQYcy8yeZTHK9H1qEbre7pA32iDdCGkrWYKlnwp9sNlvSBqOXSdAixGThVTJ5QNwduWuwmNzqhHQEQShpIyVrNVqECxYsKGmjZBqduDsffvihrHKf//znOXtCANweZ5cCo5dJ0CLEzPScOXMGXTGhPth1KkIamHYuZSyOFmFzc3NJmytXrnAftBKEnkgmk3DlypWSdlK2iqFFWFVVhYoKp/A1opLBtG/s7olJJC1RbNmypaTN6dOnJTlAEEYC077b29sl3VOSCDH93MOHD0tygCCMBKZ9P/DAA5LuKUmETqezpM3Q0BBcvXpVkhOEOvz73//W2oWKIp1OowK3ly1bJum+kkTY2NiIsqP1Qr7IPcVu9erVnD0xN9h2LfUcV8kJJHw+X8kUzK+//jqlWeZMKpVCLRJPUl1dLWnBmCgNpivq9/sl3xcdwD3JwYMHwev1fqqN1WqlEDai4pg/f37J5YlwOCx565hkEWazWbjvvvtK2gmCAC0tLZKcIQi9EovFUHMimUwG6uvrJd1b8i6K+vp61CzpqVOnpN6aIHQLpj07HA7JAgSQuZUJsw7yl7/8Rc6tCUKXYNqz1PXBSWSJcMWKFSVtRkZGIBaLybk9QeiKWCwGIyMjJe0wupgOWSLEjvUikYic2xOErsC049raWtlzILJ31mPOLunt7YVisSi3CoLQnGKxiDrvtbOzU3YdskWIyQo0OjoKg4ODcqsgCM0ZHByE0dHRknZKsmTJFmFLSwsq68xTTz0ltwqC0BxM+7VYLIqW4xQd9LRz586SNuFwGNLptJJqCEIT0uk0KvfH448/rqgeRSJ8+OGHUXavvPKKkmoIQhOw7fahhx5SVI/kiJmpfPe734XXXnvtU22sViv861//ooxAMikWizAyMiL51LW6ujp00D3xcfL5PHzxi18sGabm8Xjg1VdfVVYZU8jAwAADgJJXOBxWWpVp8fv9qGc83RWNRrV235CEw2HU8x0YGFBcl+IvYbFYhHvvLb0Zw+l0wvvvv6+kKtMi9/RtAICuri7YtWsXR2/MwVe+8hXUrpVCoaA42Y7iE7irqqpQKbsEQYBjx44prY4gVOfYsWMoAQaDQS7Zrrgcg//DH/4QZbd7924e1RGEqmDbKbbdl4KLCOvq6lARA4ODg/Q1JHRNJBJBBZh0dnZySzHALSHM1q1bUXb0NST0DHb8jG3vGLiJsLGxEXw+X0m7wcFBOHLkCK9qCYIbR44cgffee6+knc/n47r0wzU1GiaCBgBgx44dijINEQRv8vk87NixA2WLbedYuIqwsbERddDNyMgIPPvsszyrJghFPPvss6g9g36/n3sAhOJ1wqkkk0l0muBUKiX5eDgzQuuE6pJOp2Hu3Lko20QiwV2EXL+EALe/hoFAAGVL+dQJPbBnzx6UXSAQUCcMUHHMzTSkUikKq+II9llOd3V1dWntvq6JRqPoZ5lKpVTxgfuXEOD2CcSYKBqA231smqQhtCCfz6MP6w0Gg6oNnVQRIQDAtm3bUCmihoaGYN++fWq5QRB3Zd++fajcEjabDbZt26aaH6qJsKamBp5++mmU7e7du+lkNpWgM36mJxaLoQNHnn76aVW34akmQgCAdevWgcfjQdlu3bqVuqV3oba2VnZZzGnpZiOfz6MjXjweD6xbt05Vf7gvUUxFypJFIBCgruk0vPPOO/CHP/xBUpkPP/wQLBYLPPHEE7JOha5kfvazn6HnLNRYkvgEqkz3TKG3txc9A9Xf318OlwiT0t/fj26LoVCoLD6p/iUEuD0uWbp0KSo6vba2Fs6cOUPHMhDckdIrc7lcEI1GuewXLIWqY8JJqqqqIBQKoWwnJiZgy5YtND4kuJLP5+Gxxx5D24dCobIIEKBMIgQAWLx4MVqIg4OD6KgbgsDwq1/9Co4fP46y7e3thcWLF6vs0R2UpdN7Bx6PR3d9cqKyCYVC6Dbn9XrL7l9ZxoR3cvXqVUmRBwMDA4qOGCfMzbFjxyS1Hy02FZStOzrJnDlzYGBgAG2/evVqWsgnZBGLxSQJMBKJaLKrp+wiBLidPKOnpwdt7/F4IJlMqugRUWmk02l0oAgAQE9PD7S1tano0adQ9g7wfykUCszr9aL76i6Xi2UyGa3cJQxEJpNhLpdL0jiwUCho5m/Zx4R3ksvloLm5GZV6CgCgtbUVDh06xO2UK6LyyOVysHHjRvRMqM1mgzNnzmjapjQVIQDA8PAw3H///Wh7t9sNhw4dorwWxCfI5/OwceNGOHr0KLpMPB4v73LENGgyJryTxYsXS0qrffToUdi8eTMt5hMfI5/Pw+bNmyUJMBKJaC5AANBuTDiVvr4+STvG3W43Gx8f19ptQgeMj48zt9stqf309fVp7fb/0I0IGWOsu7tb0oNsbW2lyRqTk8lkWGtrq6R2093drbXbH0NXImSMsUAgIOmBulwulkgktHab0IBUKiVpFhQAWCAQ0NrtT6A7ERYKBcn5+Gw2GxMEQWvXiTIiCAKz2+2S2onf79d0KeJu6E6EjN0Wos/nk/SAAfgkbCT0TyQSkdw22tvbmSiKWrs+LboUIWOMiaIoaTF/8qKg78pGSjD25OX1enUrQMZ0LELGbguxvb1d8kP3+/26fuiEdERRZB0dHRX1BZxE1yJk7HbXVM7DpwmbyiGRSEieATXSy1j3ImTsthClzppOXnRmjbHp7+9ntbW1kv/3QCCgy0mY6TCECCeRuo44eXV0dBjijUj8H1EUZb949bYOWApDiZAx6ZE1k5fD4aBlDIMgCAJzOp2y/mc9RcJgMZwIGZM3RT157dq1i76KOkUURdbV1SX7v41EIlr/BFkYUoSMMRaPx5nNZpP9VaRsUPoiGo0yh8Mh6/+02WwsHo9r/RNkY1gRMnY7cFfOWuKdY0W10l0ROFKplOQIqTsvr9dr+EB+Q4twkp6eHtl/IgCwnp4e6qKWGVEUWTAYVPy/GWUG9NOoCBEyxtjAwICiP9Rut9NyRpno7++XHPdZKeO/6agYETLGWDqdVtQ9BQDmdDpJjCoRiUQk73qYenk8noobQlSUCCeRE1849XK5XBX1ttWSSCQiK+Jl6lWpccEVKULGbs+e8vjjnU4nC4fDNGaUSKFQYOFwWPZ639QXopFnP0tRsSJk7HZD4PFVBABmtVpZMBisuK4Qb1KpFAsGg8xqtXJ57r29vRUx+fJpVLQIJ0kkEpJyYJS6vF4vi0ajFd84sBQKBRaNRmXteLnb5fF4TBOAbwoRTsJjVu7Oy2azse7ubtOGwwmCwLq7u2UHTdytx2G2iTFTiZAxPutTZhakIAisp6eH68ts8goGg6Yce5tOhJOkUinZUfqYt7nf72cDAwOGH0OmUik2MDDA/H4/t3He1CsQCBj+OSlB8xO4tSaZTEIwGIRgMKhaHQ6HA1avXg1tbW2wYMECfRw4exeSySRcuHABTp8+DW+++SYIgqBaXX6/H3bs2GH61OimF+EkyWQSfv/738P+/ftVr8tisUBzczMsXboUvva1r8F9990HjY2NZc2HkMvlIJlMQjabhfPnz8Nbb70FgiCg84IowefzwS9+8Qtdv4zKCYlwCslkEp577jnYu3dv2eu2WCzQ1NQES5YsAYfDAYsWLYLq6mqoqamBmTNnQl1dHdTW1gIAwIwZM2DmzJn/KyuKIty6dQsAACYmJiCXy4EoipDP5+HmzZtw4cIFGBoagrNnz0IikYBr166V/fd1dnbC1q1bTf/lmwqJ8C7kcjno6+uDjo4OrV0xPMFgEDZt2gT19fVau6JLSIQlKBaLcPLkSQiFQhAOh7V2xzC43W7w+/2wZs0aqKqq0todXUMilEA6nYZXXnkF9uzZo0l3Tu9YLBbYuXMnbNiwgbqcEiARymR4eBgOHz4Me/fuhYmJCa3d0ZTu7m5YtWoVtLS0aO2KISERciAWi8GpU6fgpZdeUnVKXy/Y7XZ45JFHYMWKFSQ8DpAIOZPNZuHEiRNw/Pjxsix3lAu/3w/Lly+H5cuXw5w5c7R2p6IgEapMOp2G06dPw7lz5+DAgQNlWYdTis1mg/b2dnjggQfA6XTS+E5lSIQaMDw8DENDQ3Dp0iU4efKkpBTPvHG73bBy5UpYsGABNDU1QXNzM81mlhkSoY5Ip9OQSCRgbGwMbty4AdevX4eLFy/C5cuXYXR0FC5evIialbVYLLBw4UKw2Wwwf/58WLhwIcyePRtmzZoF8+bNg6amJmhoaCjDLyIwkAgJQmM+o7UDBGF2SIQEoTEkQoLQGBIhQWgMiZAgNIZESBAaQyIkCI0hERKExvwH4ncXy6wjeCYAAAAASUVORK5CYII=</launcher_image>
+					<popup hide_when_editing="true" x="314.326" y="344.391" width="177.435" height="109.479">
+						<text>Click &quot;Run&quot; to run a single simulation. Click &quot;Go Live&quot; to simulate and see the results as you change an initial condition or parameter. Click &quot;Stop Live&quot; to exit live simulation mode.</text>
+					</popup>
+				</isee:annotation>
+				<text_box font_weight="bold" padding="4" border_width="thin" border_style="solid" appearance="transparent" x="121.391" y="466.956" width="338.261" height="115.391">Simulation controls</text_box>
+				<text_box z_index="-2" font_weight="bold" padding="4" border_width="thin" border_style="solid" appearance="transparent" x="120.565" y="291.782" width="338.261" height="169.304">Set family characteristics</text_box>
+				<isee:annotation border_width="thin" border_style="none" isee:flat="false" isee:highlight_on_hover="true" launcher_label="" show_by_default="false" hide_launcher="false" x="432.957" y="298.685" width="19.5652" height="18.6957">
+					<launcher_image width="225" height="225" size_to_parent="true">data:image/png;base64,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</launcher_image>
+					<popup hide_when_editing="true" x="314.326" y="163.545" width="177.435" height="109.479">
+						<text>Move the sliders to adjust the family characteristics. Click the &quot;reset&quot; button at the right of the slider to reset the value of the slider to the original value for the scenario. </text>
+					</popup>
+				</isee:annotation>
+				<text_box z_index="-3" font_weight="bold" padding="4" border_width="thin" border_style="solid" appearance="transparent" x="120.304" y="116" width="338.261" height="169.304">Set individual characteristics</text_box>
+				<isee:annotation border_width="thin" border_style="none" isee:flat="false" isee:highlight_on_hover="true" launcher_label="" show_by_default="false" hide_launcher="false" x="432.696" y="121.729" width="19.5652" height="18.6957">
+					<launcher_image width="225" height="225" size_to_parent="true">data:image/png;base64,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</launcher_image>
+					<popup hide_when_editing="true" x="306.935" y="250.836" width="177.435" height="109.479">
+						<text>Move the sliders to adjust the individual characteristics. Click the &quot;reset&quot; button at the right of the slider to reset the value of the slider to the original value for the scenario. </text>
+					</popup>
+				</isee:annotation>
+				<isee:annotation border_width="thin" border_style="none" isee:flat="false" isee:highlight_on_hover="true" launcher_label="" show_by_default="false" hide_launcher="false" x="892.391" y="116.217" width="19.5652" height="18.6957">
+					<launcher_image width="225" height="225" size_to_parent="true">data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAYAAAA+s9J6AAAACXBIWXMAAAsTAAALEwEAmpwYAAAfOklEQVR4nO2df2xT1xXHT5cSKQQtY6lFwIAnklmjxYsUb+o8DRgs4YdBG/LovFFYmITbzmzZhjyxSSksAymbSDvNa6d01FJJ1x+mtCtVoIv51eJKaaU+azTgsMxGCj9iI2wRS+S5BXt3f7BsNA31ee/d5/ee3/lI779z3z1+vt/37o9z77mHMcaAIAjN+IzWDhCE2SEREoTGkAgJQmNIhAShMSRCgtAYEiFBaAyJkCA0hkRIEBpzr9YOEP8nnU5DIpGAsbExuHHjBly/fh0uXrwIly9fhtHRUbh48SJcu3at5H0sFgssXLgQbDYbzJ8/HxYuXAizZ8+GWbNmwbx586CpqQkaGhrK8IsIDPdQxEz5GR4ehqGhIbh06RKcPHkSjh49qpkvbrcbVq5cCQsWLICmpiZobm6GqqoqzfwxIyRClUmn0yAIArz77rvw/PPPw+joqNYulcRms8GWLVvA4XCA0+mExsZGrV2qaEiEnMlms3DixAk4fvw47N+/X2t3uOHz+aC1tRWWLVtGXVnOkAg5EIvF4NSpU/DSSy+BIAhau6M6drsdfvSjH8GqVaugpaVFa3cMD4lQJsPDw3D48GHYu3cvTExMaO2OpnR1dcH69etJkDIhEUognU7DCy+8ALt37za98KbDYrHAzp07YcOGDTSOlACJsATFYhFOnjwJoVAIwuGw1u4YBrfbDX6/H9asWUOzrSUgEd6FXC4HfX190NHRobUrhicYDMKmTZugvr5ea1d0CYlwCslkEp577jnYu3dv2eu2WCzQ1NQES5YsAYfDAYsWLYLq6mqoqamBmTNnQl1dHdTW1gIAwIwZM2DmzJn/KyuKIty6dQsAACYmJiCXy4EoipDP5+HmzZtw4cIFGBoagrNnz0IikUAt+vOms7MTtm7dSl3VKZAI/0symYQ9e/bAgQMHVK/LYrHAV7/6VVi6dCk4nU6YP38+zJs3D+rq6lSve5JcLgfJZBKy2SycP38e3nrrLXjvvffgypUrqtfd3t4OO3fuhMWLF6telxEwvQiTySQ8+eST8Oc//1m1OhwOB6xevRra2tpgwYIFum58yWQSLly4AIODg/DGG2+ouuTi8/lg586d9GVkJiWVSrGOjg4GANwvq9XK/H4/i0QiLJ1Oa/1TFZFOp1kkEmF+v59ZrVZVnlcgEGCpVErrn6oZphOhKIosGAxyb0h2u5319PQwQRC0/omqIggCCwaDzG63c3+GwWCQiaKo9U8sO6YSYX9/P9fGY7PZWHd3d8UL724IgsC6u7uZzWbj2ovo7+/X+qeVFVOIMJFIMI/Hw62heL1eFo1Gtf5ZuqFQKLBoNMra29u5PWOPx8MSiYTWP60sVLQIC4UC6+3t5faGDgaDph67YEilUiwYDHIbP/b29rJCoaD1z1KVihVhPB5nLpdLcSNwOp0sHA6bcqyihEKhwMLhMHM6nYr/A5fLxeLxuNY/STUqUoQ8vn4ul4tFIhGtf0pFEI1GWWtrK5evYiVSUSJMpVLM6/Uq+qMffPBBNjAwoPVPqUgikYji3onH46m4IUHFiHBgYEDRn+twOEw3K6cV/f39zOFwKPq/KulFaXgRFgoF1tPTo+gPNev6lJbwmDTr7u6uiEkbQ4swk8ko6n52dHRUXNfGaKTTaUWRS16vl2UyGa1/hiIMK8J4PC57kdjhcNA6n86IRqOyu6g2m83Qs6eGFKGS8d+uXbuo66lTRFFk3d3dsv9bo85mG06EoVBI9tfPrOFlRkMQBNnri319fVq7LxlDiVDuW7Kjo4O+fgZDFEUWCARk/d/d3d1auy8JQ4iwUCjI+kNqa2tp2cHg9Pf3s9raWsn/fSAQMMzMqe5FWCgUmN/vl/wntLa2miYAuNJJJBKyIm78fr8hekC6FqEoirIi86n7WXmIoihrKaO9vV33bUG3IhRFUdYaYCgU0tp1QkXkTMx5PB5dC1GXIiwUCrK+gEadoiakEYlEKuqLqDsRyhkD2mw2Wn4wGYIgSD4lwefz6XKyRncilDoL6nK5KPTMpKRSKcm7MgKBgNZufwJdiVDqOmBra6vh4wYJZWQyGckzp3pbR9SNCPv6+iQ9SLfbzcbHx7V2m9AB4+PjzO12G3YCTxcilBoLqvfZLqL8iKIo+TAvvUzkaX4C9/DwMNx///1oe7fbDYcOHYKamhoVvSKMSD6fh40bN8LRo0fRZeLxuOYnon9Gy8qz2SysXbsWbd/a2govvvgiCZCYlpqaGnjxxRehtbUVXWbt2rWQzWZV9Ko0momwWCzC9u3bYXR0FGXvcrng5ZdfLmvSFMJ41NXVwcsvvwwulwtlPzo6Ctu3b4disaiyZ5+CVv1gKUdS2Gw2WoYgJJFKpSRt+u7p6dHMV03GhJFIBFavXo22FwSB8qETkonFYuB0OtH2AwMDsGrVKhU9mp6yizCdTsPcuXPR9pFIBNra2lT0iKhkjh07JklYqVQKGhoaVPTok5R9TLh9+3a0bSgUIgESimhra4NQKIS2l9I+uVHOvq+UI+46OjrK6RpR4UjZBlXuk77L1h2Vsh7Y2toKb7zxBi1FENzI5/Pw7W9/G44fP46yL+f6YVlEWCwWYenSpTA4OFjStra2Fs6cOUMplAnuJJNJaG5uhomJiZK2LpcLotEoVFVVqe5XWUT4zDPPwGOPPYay7e/vh3Xr1qnskfHIZrMwPj4OqVQKRkZGYHR0FERRBFEU4datWwBwe7G6uroaGhoa4Etf+hIsWrQIZs+eDRaLpSyNyQgcOXIE1q9fj7Lt7e2FRx99VGWPyiDCZDIJTU1NKNtAIAD79u1T0x3DkMvlYGxsDA4fPgz/+Mc/4N1330UHNkyltbUV7HY7uN1ucDqdZZ/90xu//OUvoaenB2WbSCTU75WpPejEBtU6nU4Kyma3DzXq6upSnDDl0y6v18sikYhpn7coiujn6/F4VPdHVRH29/ejG4bZd8bH43Gu6aaxL75QKGRKMQqCgH5Oah+bqZoIRVFEp0zu6upSyw3dk0qlmM/nK6v4phNjJaUaw9LV1YV6PlarVdUXlWoiDAaDqB/ocDhM+SZmjLFwOCzrYFu1Lp/PZ6qTCqR0S4PBoGp+qCLCVCqF/uPNmB1JFEVZBxqX4zLboVnRaBT9bNTaRKCKCLHRCWaMislkMopTRpfjMlP6AGx7VeuQKO4iTCQSmr9Z9EoqlVJ11pP3FQ6HtX5kZUFKz02N1ArcA7iffPJJlF0wGDTVelU2m4Xly5fD0NCQ1q6g8Xq9cOTIEa3dUJ2GhgYIBoMoW2z7lgRPRWO/gmabjCkUCrISmujlMsMYURRF9GHCvL+GXEWIXecy03iDMWkR/Hq87Ha7KY6XxK5r+3w+rvVyEyH2K+hyuXhVaQikBCxIvaxWK3M6nczlcjGn08ksFotqdZllEg07acbza8hNhJ2dnSjn9XLWYznIZDJc1wHdbjfr6elhgiCwTCbDxsfHmSiK/7vGx8dZJpNhgiCwnp4eyQfilrrMsJyEPQO3s7OTW51cRDg+Po5yvLW1lUd1hkFuuuepl8/nY/F4XHIyk0KhwOLxOLc1SbP0YrBfQ15ddC4ixEbHmOkrGI/HFTd6u93ObVJEEATmdDoV+2SG/xCbeo1XFI1iERYKBZTDTqeTh7+GQenXx+12c59Blpv5+M7LLL0Z7AuLR6o1xSLE9qHNsvDLmLSAhekuj8ejah49pQHj8XhcNd/0QjgcRj0LHoHvikWI2S+odhS63pBysPHUy+FwqJ7IslAoKAqd0/Kg3HKB3QXEY7+hIhFiw33UjEDXI1IzyN55qREWNR1KvtZmGVpg5zqUhl8qClt74YUXUHYPPfSQkmoMRSwWg5GREVllg8Fg2Q64amxshK6uLlllBUGAZDLJ2SP9gW23WB3cFSUKxqyBeb1eRW8Jo6GkK1rufOqZTEa2r2aYJWWMMa/XW/JZWCwWRXXI/hLGYjHU0XE/+clP5FZhSF599VVZ5UKhUNlPRKuvr4f29nZZZQVB4OyNPsG032vXrkEsFpNdh2wRRiKRkjY2mw2+8Y1vyK3CcKTTafjggw9klf3BD37A2Rsc3/rWt2SVO3/+PGdP9InL5QKbzVbSDqOHuyFbhL/+9a9L2mDPGq0UxsbGUL2Dqfj9fs1OG//6178uq5zcca/RqKqqQrXjvXv3yq5Dlgixn14t0kxpyblz52SVc7vdnD3B84UvfEFWuRs3bvB1RMdg2vHExITsLqksEZ46daqkjd1uN11OwfHxcVnlVq5cydkTPHLHoR999JG22W3LSEtLC9jt9pJ2GF1MhywRHjhwoKTNI488IufWhmbTpk3Q2dmJTtUMcPtlpXXiG8yYZyofffSRqb6GmPaM0cV03Cu1QDabRR3RsGLFClkOGZn6+nrYs2cP/OY3v4GbN2/C2NgYCIIAly5dgn/+85/w9ttvf2Is9fDDD2vk7f8RRVFWuerqas6e6BdMex4aGoJsNgv19fWS7i1ZhCdOnChpY7VaTdcVvZOqqiqoqamBxsbGjy2+F4tFuHnzJgwPD8O5c+dgfHwctm3bpqGnt7l27ZrkMp/97GdNJcKWlhawWq1w5cqVT7U7ceIEfO9735N0b8ndUUx+t+985ztSb2sKJsXZ0tICW7ZsgZ/+9Kead0Xljuuqq6tNl+kJ066x+Q/vRLII9+/fX9Jmw4YNkh0htEHuUsOcOXM4e6J/MO0ao4+pSBIhNl7wy1/+smRHCG14//33ZZXDZl2uJBwOB8ounU5Luq8kEWJClZxOpynfkkbl9ddfl1Xum9/8Jl9HDEBDQwNKiKdPn5Z0X0kixMyKrl27VpIDhHZcvXoVXnvtNVllFy1axNkbY4AZF0o94FmSCJ9//vmSNsuWLZPkAKEdf/3rX2WVs9vtsHjxYs7eGANM+8bo5E7QIiwWi6h0zWZ9QxqNXC4HgUBAVtnvf//7nL0xDpj2PTo6KmnWGS3CM2fOlLSxWq1l25RKKOOPf/yj7LJmXoJqbGwEq9Va0k7KrDNahIlEoqRNc3MzumJCO5LJJOzevVtW2QcffNDUgRgAuHYuZVyIFuGlS5dK2mgZiEzg6ejokF328ccf5+iJMVm6dGlJG4xeJkGL8OTJkyVtaH1Q/xw8eBCOHj0qq6zNZoM1a9Zw9sh4OJ3OkjYYvUxyD2OMoQzvuaekTTweN+2smRG4evWqopyQ4XBYclxkJRKLxVBCREpL/s766Zg3bx7P2xGc2bx5s+yyLpeLBPhfeE8+okSICcOxWCxQV1en2CFCHZ555hlZwcWTPPXUUxy9MTZ1dXVgsVhK2mHD11AixMyMNjU1oSokyk8ymVR03k8gEDD9jOhUMO0doxsApAjHxsZK2ixZsgRVIVFeisWipJ3+U6mtrYXf/va3HD2qDDDtHaMbAKQIMccYYCPMifLy4x//WNam3Un+9re/ab7nUY9g2jv2+A+UCK9fv17ShsLV9MeRI0dk7W+bJBAIQFtbG0ePKgdMe8foBgApwosXL5a0MdNRB0YgnU7D+vXrZZe32Wzwu9/9jqNHlQWmvWN0A4AU4eXLl0vaUJdFXyg98/XNN9803fEVUsC0d4xuAJAixOyemDlzJqpCQn12794teU/bnfT29lLQRQkw7R2jGwCO3VFaI9QH77zzjqLZTI/HA48++ihHjyoTTHvHdkdRYWuYkLVUKqUoJIpQTj6fV9wjGR8fpxcqgnQ6DXPnzi1phwld4xa2hhEqoS4bN25UVD4ajZIANYCbCO+9V/I5wgRH/vSnP8neHQEAsGvXLlOlsVPKjBkzuN2LW3eUujHakUwmFYUNOp1O2UcfmpVcLgef+9znStphuqPcRCiKIi1TaITSoQCN56WDHX+XdUx48+ZNXrciJLB161ZF5cPhMAlQBjzbOzcRFgoFXrcikBw8eFB2Oi4AAJ/PR3sEZcKzvXPrjqbTaTp5u4xgp8jvhsVigVQqRVExMtHlEgV2Kz/BB6VhaW+//TYJUCegRIjZRTwxMaHYGQLHE088QWFpGoNp7xjdACBFuHDhwpI2uVwOVSGhjHQ6LfvkbAAKS+MFpr1jdAOAFCEmp7nclMuENH7+858rKi83/wTxcTDtHaMbAKQI58+fX9Imn8+jKiTkMzw8DOFwWHb5aDRKa7mcwLR3jG4AOHZHaZ1QfXp7e2WXDQQCFJbGEUx759odnT17dkmbCxcuoCok5FEsFiEYDMouT7vk+YJp7xjdACBFOGvWrJI2SmbriNJIOVZ9KuFwmJYjOINp7xjdACBFiDlZ++zZs6gKCXl88MEHsstSVAx/MO0deyI9SoQ8Dzol5PH3v/9dVrnu7m7OnhAAfA/E5poQhrYzqYfcnRLRaJQmZDjDcxsTAOeEMNgTh4nyQYcy8yeZTHK9H1qEbre7pA32iDdCGkrWYKlnwp9sNlvSBqOXSdAixGThVTJ5QNwduWuwmNzqhHQEQShpIyVrNVqECxYsKGmjZBqduDsffvihrHKf//znOXtCANweZ5cCo5dJ0CLEzPScOXMGXTGhPth1KkIamHYuZSyOFmFzc3NJmytXrnAftBKEnkgmk3DlypWSdlK2iqFFWFVVhYoKp/A1opLBtG/s7olJJC1RbNmypaTN6dOnJTlAEEYC077b29sl3VOSCDH93MOHD0tygCCMBKZ9P/DAA5LuKUmETqezpM3Q0BBcvXpVkhOEOvz73//W2oWKIp1OowK3ly1bJum+kkTY2NiIsqP1Qr7IPcVu9erVnD0xN9h2LfUcV8kJJHw+X8kUzK+//jqlWeZMKpVCLRJPUl1dLWnBmCgNpivq9/sl3xcdwD3JwYMHwev1fqqN1WqlEDai4pg/f37J5YlwOCx565hkEWazWbjvvvtK2gmCAC0tLZKcIQi9EovFUHMimUwG6uvrJd1b8i6K+vp61CzpqVOnpN6aIHQLpj07HA7JAgSQuZUJsw7yl7/8Rc6tCUKXYNqz1PXBSWSJcMWKFSVtRkZGIBaLybk9QeiKWCwGIyMjJe0wupgOWSLEjvUikYic2xOErsC049raWtlzILJ31mPOLunt7YVisSi3CoLQnGKxiDrvtbOzU3YdskWIyQo0OjoKg4ODcqsgCM0ZHByE0dHRknZKsmTJFmFLSwsq68xTTz0ltwqC0BxM+7VYLIqW4xQd9LRz586SNuFwGNLptJJqCEIT0uk0KvfH448/rqgeRSJ8+OGHUXavvPKKkmoIQhOw7fahhx5SVI/kiJmpfPe734XXXnvtU22sViv861//ooxAMikWizAyMiL51LW6ujp00D3xcfL5PHzxi18sGabm8Xjg1VdfVVYZU8jAwAADgJJXOBxWWpVp8fv9qGc83RWNRrV235CEw2HU8x0YGFBcl+IvYbFYhHvvLb0Zw+l0wvvvv6+kKtMi9/RtAICuri7YtWsXR2/MwVe+8hXUrpVCoaA42Y7iE7irqqpQKbsEQYBjx44prY4gVOfYsWMoAQaDQS7Zrrgcg//DH/4QZbd7924e1RGEqmDbKbbdl4KLCOvq6lARA4ODg/Q1JHRNJBJBBZh0dnZySzHALSHM1q1bUXb0NST0DHb8jG3vGLiJsLGxEXw+X0m7wcFBOHLkCK9qCYIbR44cgffee6+knc/n47r0wzU1GiaCBgBgx44dijINEQRv8vk87NixA2WLbedYuIqwsbERddDNyMgIPPvsszyrJghFPPvss6g9g36/n3sAhOJ1wqkkk0l0muBUKiX5eDgzQuuE6pJOp2Hu3Lko20QiwV2EXL+EALe/hoFAAGVL+dQJPbBnzx6UXSAQUCcMUHHMzTSkUikKq+II9llOd3V1dWntvq6JRqPoZ5lKpVTxgfuXEOD2CcSYKBqA231smqQhtCCfz6MP6w0Gg6oNnVQRIQDAtm3bUCmihoaGYN++fWq5QRB3Zd++fajcEjabDbZt26aaH6qJsKamBp5++mmU7e7du+lkNpWgM36mJxaLoQNHnn76aVW34akmQgCAdevWgcfjQdlu3bqVuqV3oba2VnZZzGnpZiOfz6MjXjweD6xbt05Vf7gvUUxFypJFIBCgruk0vPPOO/CHP/xBUpkPP/wQLBYLPPHEE7JOha5kfvazn6HnLNRYkvgEqkz3TKG3txc9A9Xf318OlwiT0t/fj26LoVCoLD6p/iUEuD0uWbp0KSo6vba2Fs6cOUPHMhDckdIrc7lcEI1GuewXLIWqY8JJqqqqIBQKoWwnJiZgy5YtND4kuJLP5+Gxxx5D24dCobIIEKBMIgQAWLx4MVqIg4OD6KgbgsDwq1/9Co4fP46y7e3thcWLF6vs0R2UpdN7Bx6PR3d9cqKyCYVC6Dbn9XrL7l9ZxoR3cvXqVUmRBwMDA4qOGCfMzbFjxyS1Hy02FZStOzrJnDlzYGBgAG2/evVqWsgnZBGLxSQJMBKJaLKrp+wiBLidPKOnpwdt7/F4IJlMqugRUWmk02l0oAgAQE9PD7S1tano0adQ9g7wfykUCszr9aL76i6Xi2UyGa3cJQxEJpNhLpdL0jiwUCho5m/Zx4R3ksvloLm5GZV6CgCgtbUVDh06xO2UK6LyyOVysHHjRvRMqM1mgzNnzmjapjQVIQDA8PAw3H///Wh7t9sNhw4dorwWxCfI5/OwceNGOHr0KLpMPB4v73LENGgyJryTxYsXS0qrffToUdi8eTMt5hMfI5/Pw+bNmyUJMBKJaC5AANBuTDiVvr4+STvG3W43Gx8f19ptQgeMj48zt9stqf309fVp7fb/0I0IGWOsu7tb0oNsbW2lyRqTk8lkWGtrq6R2093drbXbH0NXImSMsUAgIOmBulwulkgktHab0IBUKiVpFhQAWCAQ0NrtT6A7ERYKBcn5+Gw2GxMEQWvXiTIiCAKz2+2S2onf79d0KeJu6E6EjN0Wos/nk/SAAfgkbCT0TyQSkdw22tvbmSiKWrs+LboUIWOMiaIoaTF/8qKg78pGSjD25OX1enUrQMZ0LELGbguxvb1d8kP3+/26fuiEdERRZB0dHRX1BZxE1yJk7HbXVM7DpwmbyiGRSEieATXSy1j3ImTsthClzppOXnRmjbHp7+9ntbW1kv/3QCCgy0mY6TCECCeRuo44eXV0dBjijUj8H1EUZb949bYOWApDiZAx6ZE1k5fD4aBlDIMgCAJzOp2y/mc9RcJgMZwIGZM3RT157dq1i76KOkUURdbV1SX7v41EIlr/BFkYUoSMMRaPx5nNZpP9VaRsUPoiGo0yh8Mh6/+02WwsHo9r/RNkY1gRMnY7cFfOWuKdY0W10l0ROFKplOQIqTsvr9dr+EB+Q4twkp6eHtl/IgCwnp4e6qKWGVEUWTAYVPy/GWUG9NOoCBEyxtjAwICiP9Rut9NyRpno7++XHPdZKeO/6agYETLGWDqdVtQ9BQDmdDpJjCoRiUQk73qYenk8noobQlSUCCeRE1849XK5XBX1ttWSSCQiK+Jl6lWpccEVKULGbs+e8vjjnU4nC4fDNGaUSKFQYOFwWPZ639QXopFnP0tRsSJk7HZD4PFVBABmtVpZMBisuK4Qb1KpFAsGg8xqtXJ57r29vRUx+fJpVLQIJ0kkEpJyYJS6vF4vi0ajFd84sBQKBRaNRmXteLnb5fF4TBOAbwoRTsJjVu7Oy2azse7ubtOGwwmCwLq7u2UHTdytx2G2iTFTiZAxPutTZhakIAisp6eH68ts8goGg6Yce5tOhJOkUinZUfqYt7nf72cDAwOGH0OmUik2MDDA/H4/t3He1CsQCBj+OSlB8xO4tSaZTEIwGIRgMKhaHQ6HA1avXg1tbW2wYMECfRw4exeSySRcuHABTp8+DW+++SYIgqBaXX6/H3bs2GH61OimF+EkyWQSfv/738P+/ftVr8tisUBzczMsXboUvva1r8F9990HjY2NZc2HkMvlIJlMQjabhfPnz8Nbb70FgiCg84IowefzwS9+8Qtdv4zKCYlwCslkEp577jnYu3dv2eu2WCzQ1NQES5YsAYfDAYsWLYLq6mqoqamBmTNnQl1dHdTW1gIAwIwZM2DmzJn/KyuKIty6dQsAACYmJiCXy4EoipDP5+HmzZtw4cIFGBoagrNnz0IikYBr166V/fd1dnbC1q1bTf/lmwqJ8C7kcjno6+uDjo4OrV0xPMFgEDZt2gT19fVau6JLSIQlKBaLcPLkSQiFQhAOh7V2xzC43W7w+/2wZs0aqKqq0todXUMilEA6nYZXXnkF9uzZo0l3Tu9YLBbYuXMnbNiwgbqcEiARymR4eBgOHz4Me/fuhYmJCa3d0ZTu7m5YtWoVtLS0aO2KISERciAWi8GpU6fgpZdeUnVKXy/Y7XZ45JFHYMWKFSQ8DpAIOZPNZuHEiRNw/Pjxsix3lAu/3w/Lly+H5cuXw5w5c7R2p6IgEapMOp2G06dPw7lz5+DAgQNlWYdTis1mg/b2dnjggQfA6XTS+E5lSIQaMDw8DENDQ3Dp0iU4efKkpBTPvHG73bBy5UpYsGABNDU1QXNzM81mlhkSoY5Ip9OQSCRgbGwMbty4AdevX4eLFy/C5cuXYXR0FC5evIialbVYLLBw4UKw2Wwwf/58WLhwIcyePRtmzZoF8+bNg6amJmhoaCjDLyIwkAgJQmM+o7UDBGF2SIQEoTEkQoLQGBIhQWgMiZAgNIZESBAaQyIkCI0hERKExvwH4ncXy6wjeCYAAAAASUVORK5CYII=</launcher_image>
+					<popup hide_when_editing="true" x="543.892" y="17.5849" width="174.826" height="81.4444">
+						<text>Cognitive vulnerabilities varies on a scale from 0 (none) to 100 (max). Family support varies on a scale from 0 (none) to 100 (max). </text>
+					</popup>
+				</isee:annotation>
+				<isee:annotation border_width="thin" border_style="none" isee:flat="false" isee:highlight_on_hover="true" launcher_label="" show_by_default="false" hide_launcher="false" x="892.391" y="347.164" width="19.5652" height="18.6957">
+					<launcher_image width="225" height="225" size_to_parent="true">data:image/png;base64,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</launcher_image>
+					<popup hide_when_editing="true" x="821.718" y="477.793" width="227.87" height="109.479">
+						<text>Loop scores correspond to the feedback loops identified in the model (e.g., B1, B2, ..., R1, L1). Loop scores vary from 0 to +100 for reinforcing loops and 0 to -100 for balancing loops. The magnitude is a percent of overall influence in the model.</text>
+					</popup>
+				</isee:annotation>
+				<button label="S6" x="49" y="384.471">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="45" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S5" x="49" y="343.877">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="40" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S4" x="49" y="303.283">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="55" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S3" x="49" y="262.688">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="1.25" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.1" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="12" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.5" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S2" x="49" y="222.094">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.25" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S1" x="49" y="181.5">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.5" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<text_box z_index="-3" font_weight="bold" padding="4" border_width="thin" border_style="solid" appearance="transparent" x="4" y="116" width="92.1546" height="300">Select scenarios</text_box>
+				<text_box x="6" y="58.2609" width="1049.57" height="41.4783">Select the scenario and see a base run. Then modify the individual and family characteristics and click [Run] to explore how these changes translate into variations in the dynamics of cognitive vulnerability and family support (top right graphs) and the dynamics of the underlying feedback mechanisms (bottom right graphs). To see the effects as you change parameters, enter live simulation by clicking [Go Live] and exist by clicking [Stop Live].</text_box>
+				<button label="Export results" x="165.652" y="549.566">
+					<actions>
+						<action orientation="vertical" type="export_data"/>
+					</actions>
+				</button>
+			</view>
+			<view isee:template_view="template:1" isee:name="Table functions" background="white" page_width="1066" page_height="600" zoom="115" type="interface">
+				<style/>
+				<stacked_container x="460" y="105" width="598" height="233">
+					<graph legend_position="right" isee:hide_border="true" width="598" height="233" comparative="true" type="time_series" show_grid="true" isee:tick_type="none" include_units_in_legend="false" plot_numbers="true" isee:label_pie_slices="false" num_x_grid_lines="8" num_y_grid_lines="0" num_x_labels="8" num_y_labels="3" isee:fill_intensity="0.1" to="21" from="0" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot isee:immediately_update_on_user_input="true" color="blue" isee:keep_zero_visible="false" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Cognitive_Vulnerabilities"/>
+							<scale min="0" max="100"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<graphical_input x="133.478" y="107.13" width="134.13" height="150" isee:navigate_to="false" show_name="true" isee:fill_intensity="0" isee:series_color="black" isee:input_precision="0">
+					<entity name="Avoidant_Coping"/>
+					<reset_to after="never">0</reset_to>
+				</graphical_input>
+				<graphical_input x="133.478" y="432.381" width="134.13" height="150" title="Effect of Family Support" isee:navigate_to="false" show_name="true" isee:fill_intensity="0" isee:series_color="black" isee:input_precision="0">
+					<entity name="Effect_of_Family_Support_on_Cognitive_Vulnerabilities"/>
+					<reset_to after="never">0</reset_to>
+				</graphical_input>
+				<graphical_input x="277.173" y="432.381" width="130.652" height="150" title="Effect of Maladaptive Behaviors" isee:navigate_to="false" show_name="true" isee:fill_intensity="0" isee:series_color="black" isee:input_precision="0">
+					<entity name="Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities"/>
+					<reset_to after="never">0</reset_to>
+				</graphical_input>
+				<graphical_input x="133.478" y="267.924" width="134.13" height="150" isee:navigate_to="false" show_name="true" isee:fill_intensity="0" isee:series_color="black" isee:input_precision="0">
+					<entity name="Family_Response_to_Avoidant_Coping"/>
+					<reset_to after="never">0</reset_to>
+				</graphical_input>
+				<graphical_input x="277.173" y="107.13" width="130.652" height="150" isee:navigate_to="false" show_name="true" isee:fill_intensity="0" isee:series_color="black" isee:input_precision="0">
+					<entity name="Maladaptive_Behaviors"/>
+					<reset_to after="never">0</reset_to>
+				</graphical_input>
+				<graphical_input x="277.173" y="267.924" width="130.652" height="150" isee:navigate_to="false" show_name="true" isee:fill_intensity="0" isee:series_color="black" isee:input_precision="0">
+					<entity name="Family_Response_to_Maladaptive_Behavior"/>
+					<reset_to after="never">0</reset_to>
+				</graphical_input>
+				<button label="" x="49" y="544.773">
+					<actions>
+						<action>restore_all</action>
+					</actions>
+				</button>
+				<stacked_container x="460" y="333" width="598" height="233">
+					<graph legend_position="right" isee:hide_border="true" width="598" height="233" comparative="true" type="time_series" show_grid="true" isee:tick_type="none" include_units_in_legend="false" plot_numbers="true" isee:label_pie_slices="false" num_x_grid_lines="8" num_y_grid_lines="0" num_x_labels="8" num_y_labels="3" isee:fill_intensity="0.1" to="21" from="0" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot isee:immediately_update_on_user_input="true" color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Family_Support"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<button label="Name runs" x="49" y="500">
+					<actions>
+						<action>set_run_name</action>
+					</actions>
+				</button>
+				<button label="S1" x="49" y="181.5">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.5" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S2" x="49" y="222.094">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.125" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.25" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S3" x="49" y="262.688">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="1.25" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.1" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="12" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="20" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.5" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S4" x="49" y="303.283">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="55" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S5" x="49" y="343.877">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="40" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<button label="S6" x="49" y="384.47">
+					<actions>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="2" isee:entity="Cognitive_Vulnerabilities_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Response_Delay">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Family_Support_AT">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="25" isee:entity="Initial_Cognitive_Vulnerabilities">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="45" isee:entity="Initial_Family_Support">control_entity</action>
+						<action isee:reset_after="never" isee:reset_value="0" isee:controller_value="0.15" isee:entity="Onset_of_Maladaptive_Behaviors_Delay">control_entity</action>
+						<action>start</action>
+					</actions>
+				</button>
+				<text_box z_index="-3" font_weight="bold" padding="4" border_width="thin" border_style="solid" appearance="transparent" x="4" y="116" width="92.1546" height="300">Select scenarios</text_box>
+				<text_box x="6" y="58.2609" width="1049.57" height="41.4783">Study the effects that the shapes of the graphical or table functions have on each scenario. Click on the scenario to set the parameters and simulate a base run. To modify a table function, click on the graph to modify the graph, and then select the scenario to rerun the simulation with the modified graph. See the comparison of the different results on the graphs for cognitive vulnerabilities and family support below. Rename the runs to something more meaningful by clicking on [Name runs]. Return all the tables and graphs to their original values by clicking [Restore].</text_box>
+			</view>
+			<view isee:template_view="template:1" isee:name="Acknowledgments" background="white" page_width="1066" page_height="600" zoom="145" type="interface">
+				<style/>
+				<text_box x="25.2174" y="75.6522" width="1025.22" height="504.957">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.AppleSystemUIFont&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Arial&apos;; font-size:12pt; font-weight:600; color:#000000;&quot;&gt;Contributors:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Arial&apos;; font-size:12pt; font-weight:600; color:#000000;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Arial&apos;; font-size:12pt; font-weight:600; color:#000000;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Arial&apos;; font-size:12pt; font-weight:600; color:#000000;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Arial&apos;; font-size:12pt; font-weight:600; color:#000000;&quot;&gt;Funders:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</text_box>
+			</view>
+			<isee:templates>
+				<view isee:name="Main tabs" background="white" page_width="1066" page_height="600" isee:scroll_y="1.73913" zoom="115" type="template">
+					<style/>
+					<isee:navigation_widget font_size="14pt" border_width="1.5" appearance="tabs" corner_radius="5" selected_item_background="white" item_background="#DDDDDD" orientation="horizontal" x="4" y="7.6087" width="956.522" height="37.8261">
+						<isee:navigation_item label="" target="interface:0"/>
+						<isee:navigation_item label="" target="interface:1"/>
+						<isee:navigation_item label="" target="interface:2"/>
+						<isee:navigation_item label="" target="interface:3"/>
+						<isee:navigation_item label="" target="interface:4"/>
+					</isee:navigation_widget>
+				</view>
+				<view isee:name="Story page" background="white" page_width="1066" page_height="600" isee:scroll_x="371.304" zoom="115" type="template">
+					<style/>
+					<button label="" x="885" y="566">
+						<actions>
+							<action target="home_page">navigate</action>
+						</actions>
+					</button>
+					<button label="" x="954" y="566">
+						<actions>
+							<action target="previous_page">navigate</action>
+						</actions>
+					</button>
+					<button label="" x="1023" y="566">
+						<actions>
+							<action target="next_page">navigate</action>
+						</actions>
+					</button>
+				</view>
+				<view isee:name="First story page" background="white" page_width="1066" page_height="600" isee:scroll_x="427" type="template">
+					<style/>
+					<button label="" x="1023" y="566">
+						<actions>
+							<action target="next_page">navigate</action>
+						</actions>
+					</button>
+					<button label="" x="954" y="566">
+						<actions>
+							<action target="previous_page">navigate</action>
+						</actions>
+					</button>
+				</view>
+				<view isee:name="Last story page" background="white" page_width="1066" page_height="600" isee:scroll_x="427" type="template">
+					<style/>
+					<button label="" x="1023" y="566">
+						<actions>
+							<action target="home_page">navigate</action>
+						</actions>
+					</button>
+				</view>
+			</isee:templates>
+			<isee:stories>
+				<isee:story uid="45" name="Overview">
+					<view isee:template_view="template:3" background="white" page_width="1066" page_height="600" zoom="145" type="interface">
+						<style/>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Developmental_Transitions"/>
+								<entity name="School_Transitions"/>
+								<entity name="Cognitive_Vulnerabilities"/>
+								<item uid="35"/>
+							</isee:visible_list>
+							<isee:highlight_list/>
+						</isee:model_view>
+						<isee:annotation launcher_label="" show_by_default="true" hide_launcher="true" x="495" y="254">
+							<popup x="436.5" y="253" width="262" height="164">
+								<text>Cognitive vulnerabilities refers to a combination of attributional style, self, and future consequences (Mezulis et al 2009) that place a person at greater risk of depression in the face of stressful events. Cognitive vulnerabilities are quantified on a 0 (none) to 100 (max cognitive vulnerabilities) scale. School transitions represent a exogenous shock that contributes to developmental transitions and cognitive vulnerabilities. </text>
+							</popup>
+						</isee:annotation>
+					</view>
+					<view isee:template_view="template:2" background="white" page_width="1066" page_height="600" zoom="145" type="interface">
+						<style/>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Developmental_Transitions"/>
+								<entity name="Avoidant_Coping"/>
+								<entity name="School_Transitions"/>
+								<item uid="16"/>
+								<item uid="35"/>
+								<entity name="Cognitive_Vulnerabilities"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="16"/>
+								<entity name="Avoidant_Coping"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<isee:annotation launcher_label="" show_by_default="true" hide_launcher="true" x="496" y="369">
+							<popup x="494.5" y="341" width="231" height="131">
+								<text>Cognitive vulnerabilities can lead to avoidant coping behaviors, which are quantified on a 0 (none) to 100 (max) scale. The model assumes that this relationship is linear and that avoidant coping is directly influenced by the level of cognitive vulnerabilities without delay. </text>
+							</popup>
+						</isee:annotation>
+					</view>
+					<view isee:template_view="template:2" background="white" page_width="1066" page_height="600" zoom="145" type="interface">
+						<style/>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="35"/>
+								<entity name="Developmental_Transitions"/>
+								<item uid="25"/>
+								<entity name="Maladaptive_Behaviors"/>
+								<entity name="School_Transitions"/>
+								<item uid="16"/>
+								<entity name="Avoidant_Coping"/>
+								<entity name="Cognitive_Vulnerabilities"/>
+								<entity name="Onset_of_Maladaptive_Behaviors_Delay"/>
+								<item uid="15"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Maladaptive_Behaviors"/>
+								<entity name="Onset_of_Maladaptive_Behaviors_Delay"/>
+								<item uid="15"/>
+								<item uid="25"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<isee:annotation launcher_label="" show_by_default="true" hide_launcher="true" x="327" y="420">
+							<popup x="265.5" y="393" width="207" height="130">
+								<text>Avoidant coping can develop into maladaptive behaviors. Maladaptive behaviors are quantified on a 0 (none) to 100 (max) scale. The onset of maladaptive behaviors is delayed and the length of this delay varies by the individual. </text>
+							</popup>
+						</isee:annotation>
+					</view>
+					<view isee:template_view="template:2" background="white" page_width="1066" page_height="600" zoom="145" type="interface">
+						<style/>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Maladaptive_Behaviors"/>
+								<entity name="School_Transitions"/>
+								<item uid="39"/>
+								<entity name="Avoidant_Coping"/>
+								<item uid="25"/>
+								<entity name="Developmental_Transitions"/>
+								<item uid="12"/>
+								<item uid="16"/>
+								<entity name="Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities"/>
+								<item uid="9"/>
+								<item uid="35"/>
+								<entity name="Developmental_Change_in_Cognitive_Vulnerabilities"/>
+								<item uid="36"/>
+								<entity name="Onset_of_Maladaptive_Behaviors_Delay"/>
+								<entity name="Cognitive_Vulnerabilities"/>
+								<item uid="15"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Developmental_Change_in_Cognitive_Vulnerabilities"/>
+								<item uid="9"/>
+								<entity name="Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities"/>
+								<item uid="12"/>
+								<item uid="39"/>
+								<item uid="36"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<isee:annotation launcher_label="" show_by_default="true" hide_launcher="true" x="172" y="373">
+							<popup x="35.5" y="328" width="231" height="247">
+								<text>Maladaptive behaviors can contribute to additional cognitive vulnerabilities. This creates a reinforcing feedback loop (R1). Reinforcing feedback loops form vicious and virtuous cycles. 
+
+For example, an increase in cognitive vulnerabilities can lead to an increase in avoidant coping, which then leads to an increase in maladaptive behavior, which &quot;feeds back&quot; in R1 to reinforce the initial change in cognitive vulnerabilities. In a similar way, a decrease in cognitive vulnerabilities would, through R1, reinforce the initial decrease to create a virtuous cycle. </text>
+							</popup>
+						</isee:annotation>
+					</view>
+					<view isee:template_view="template:2" background="white" page_width="1066" page_height="600" zoom="145" type="interface">
+						<style/>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Avoidant_Coping"/>
+								<entity name="School_Transitions"/>
+								<entity name="Maladaptive_Behaviors"/>
+								<item uid="39"/>
+								<item uid="25"/>
+								<entity name="Cognitive_Vulnerabilities_AT"/>
+								<item uid="12"/>
+								<entity name="Developmental_Transitions"/>
+								<item uid="16"/>
+								<item uid="4"/>
+								<item uid="10"/>
+								<entity name="Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities"/>
+								<item uid="9"/>
+								<entity name="Onset_of_Maladaptive_Behaviors_Delay"/>
+								<item uid="15"/>
+								<item uid="36"/>
+								<entity name="Cognitive_Vulnerabilities"/>
+								<item uid="35"/>
+								<entity name="Developmental_Change_in_Cognitive_Vulnerabilities"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="10"/>
+								<entity name="Cognitive_Vulnerabilities_AT"/>
+								<item uid="4"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<isee:annotation launcher_label="" show_by_default="true" hide_launcher="true" x="141" y="425">
+							<popup x="57.5" y="298" width="167" height="100">
+								<text>Cognitive vulnerabilities also change naturally over time as individual learn to adapt to their e</text>
+							</popup>
+						</isee:annotation>
+					</view>
+					<view isee:template_view="template:2" background="white" page_width="1066" page_height="600" zoom="145" type="interface">
+						<style/>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Family_Support"/>
+								<entity name="Cognitive_Vulnerabilities_AT"/>
+								<item uid="25"/>
+								<item uid="39"/>
+								<entity name="Maladaptive_Behaviors"/>
+								<entity name="Avoidant_Coping"/>
+								<entity name="Effect_of_Family_Support_on_Cognitive_Vulnerabilities"/>
+								<entity name="School_Transitions"/>
+								<item uid="10"/>
+								<item uid="18"/>
+								<item uid="8"/>
+								<item uid="9"/>
+								<entity name="Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities"/>
+								<item uid="16"/>
+								<item uid="4"/>
+								<entity name="Developmental_Transitions"/>
+								<item uid="12"/>
+								<entity name="Developmental_Change_in_Cognitive_Vulnerabilities"/>
+								<item uid="35"/>
+								<entity name="Cognitive_Vulnerabilities"/>
+								<item uid="36"/>
+								<entity name="Onset_of_Maladaptive_Behaviors_Delay"/>
+								<item uid="15"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Effect_of_Family_Support_on_Cognitive_Vulnerabilities"/>
+								<item uid="18"/>
+								<item uid="8"/>
+								<entity name="Family_Support"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<isee:annotation launcher_label="" show_by_default="true" hide_launcher="true" x="142" y="466">
+							<popup x="83.5" y="425" width="196" height="91">
+								<text>Changes in cognitive vulnerabilities are also moderated by family support. Family support is quantified on a 0 (none) to 100 (max) scale. </text>
+							</popup>
+						</isee:annotation>
+					</view>
+					<view isee:template_view="template:2" background="white" page_width="1066" page_height="600" zoom="145" type="interface">
+						<style/>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="28"/>
+								<entity name="Maladaptive_Behaviors"/>
+								<item uid="39"/>
+								<entity name="Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities"/>
+								<item uid="9"/>
+								<entity name="Net_Change_in_Family_Support"/>
+								<entity name="Cognitive_Vulnerabilities_AT"/>
+								<entity name="Avoidant_Coping"/>
+								<item uid="10"/>
+								<item uid="18"/>
+								<item uid="8"/>
+								<entity name="School_Transitions"/>
+								<entity name="Effect_of_Family_Support_on_Cognitive_Vulnerabilities"/>
+								<entity name="Developmental_Transitions"/>
+								<item uid="12"/>
+								<item uid="25"/>
+								<item uid="36"/>
+								<entity name="Cognitive_Vulnerabilities"/>
+								<entity name="Onset_of_Maladaptive_Behaviors_Delay"/>
+								<item uid="15"/>
+								<entity name="Developmental_Change_in_Cognitive_Vulnerabilities"/>
+								<item uid="35"/>
+								<item uid="26"/>
+								<entity name="Family_Support"/>
+								<item uid="4"/>
+								<item uid="16"/>
+								<entity name="Family_Support_AT"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="26"/>
+								<entity name="Family_Support_AT"/>
+								<entity name="Net_Change_in_Family_Support"/>
+								<item uid="28"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<isee:annotation launcher_label="" show_by_default="true" hide_launcher="true" x="305" y="497">
+							<popup x="248.5" y="450" width="259" height="132">
+								<text>Families differ in how much they adjust support. Some change very fast and quickly throw their support to helping a child or adolescent while others take longer and some don&apos;t change at all. The longer the adjustment time (Family Support AT), the longer it takes for the family to change the level of support. </text>
+							</popup>
+						</isee:annotation>
+					</view>
+					<view isee:template_view="template:2" background="white" page_width="1066" page_height="600" zoom="145" type="interface">
+						<style/>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="4"/>
+								<item uid="39"/>
+								<entity name="Net_Change_in_Family_Support"/>
+								<entity name="Cognitive_Vulnerabilities_AT"/>
+								<item uid="41"/>
+								<item uid="9"/>
+								<entity name="Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities"/>
+								<entity name="Family_Response_to_Avoidant_Coping"/>
+								<item uid="28"/>
+								<entity name="Maladaptive_Behaviors"/>
+								<entity name="Avoidant_Coping"/>
+								<item uid="38"/>
+								<item uid="12"/>
+								<entity name="Developmental_Transitions"/>
+								<item uid="25"/>
+								<entity name="Effect_of_Family_Support_on_Cognitive_Vulnerabilities"/>
+								<entity name="School_Transitions"/>
+								<item uid="35"/>
+								<entity name="Developmental_Change_in_Cognitive_Vulnerabilities"/>
+								<item uid="24"/>
+								<item uid="26"/>
+								<entity name="Family_Support"/>
+								<entity name="Family_Support_AT"/>
+								<item uid="16"/>
+								<item uid="20"/>
+								<entity name="Family_Response_Delay"/>
+								<entity name="Cognitive_Vulnerabilities"/>
+								<item uid="36"/>
+								<item uid="15"/>
+								<entity name="Onset_of_Maladaptive_Behaviors_Delay"/>
+								<item uid="18"/>
+								<item uid="8"/>
+								<item uid="10"/>
+								<item uid="22"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="20"/>
+								<entity name="Family_Response_Delay"/>
+								<item uid="41"/>
+								<entity name="Family_Response_to_Avoidant_Coping"/>
+								<item uid="38"/>
+								<item uid="24"/>
+								<item uid="22"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<isee:annotation launcher_label="" show_by_default="true" hide_launcher="true" x="604" y="325">
+							<popup x="536.5" y="300" width="238" height="217">
+								<text>Family can change in response to changes in avoidant coping behavior. This forms a balancing loop (B2) that counteracts an change in avoidant coping. How fast families respond depends on how quickly they recognized a change in avoidant coping behavior. Families that quickly notice changes in the child or adolescent have a short Family Response Delay whereas families that take a long time to notice changes or deny changes outright have a long Family Response Delay. </text>
+							</popup>
+						</isee:annotation>
+					</view>
+					<view isee:template_view="template:4" background="white" page_width="1066" page_height="600" zoom="145" type="interface">
+						<style/>
+						<isee:model_view x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" show_ltm_table="false">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<item uid="39"/>
+								<item uid="4"/>
+								<item uid="28"/>
+								<entity name="Maladaptive_Behaviors"/>
+								<entity name="Net_Change_in_Family_Support"/>
+								<entity name="Cognitive_Vulnerabilities_AT"/>
+								<entity name="Family_Response_to_Maladaptive_Behavior"/>
+								<entity name="Avoidant_Coping"/>
+								<entity name="School_Transitions"/>
+								<entity name="Effect_of_Family_Support_on_Cognitive_Vulnerabilities"/>
+								<item uid="38"/>
+								<item uid="26"/>
+								<entity name="Family_Support"/>
+								<item uid="23"/>
+								<item uid="24"/>
+								<item uid="35"/>
+								<item uid="37"/>
+								<entity name="Developmental_Change_in_Cognitive_Vulnerabilities"/>
+								<item uid="41"/>
+								<item uid="19"/>
+								<item uid="10"/>
+								<item uid="18"/>
+								<item uid="8"/>
+								<item uid="22"/>
+								<entity name="Cognitive_Vulnerabilities"/>
+								<item uid="36"/>
+								<item uid="20"/>
+								<entity name="Family_Response_Delay"/>
+								<entity name="Onset_of_Maladaptive_Behaviors_Delay"/>
+								<item uid="15"/>
+								<item uid="16"/>
+								<entity name="Family_Support_AT"/>
+								<item uid="9"/>
+								<entity name="Family_Response_to_Avoidant_Coping"/>
+								<entity name="Effect_of_Maladaptive_Behaviors_on_Cognitive_Vulnerabilities"/>
+								<item uid="12"/>
+								<entity name="Developmental_Transitions"/>
+								<item uid="25"/>
+								<item uid="21"/>
+								<item uid="40"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<item uid="40"/>
+								<item uid="21"/>
+								<item uid="23"/>
+								<item uid="37"/>
+								<item uid="19"/>
+								<entity name="Family_Response_to_Maladaptive_Behavior"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<isee:annotation launcher_label="" show_by_default="true" hide_launcher="true" x="551" y="333">
+							<popup x="555.5" y="230" width="229" height="140">
+								<text>Families can also respond to changes in maladaptive behaviors forming a second balancing feedback loop (B1). Again, how fast the family responds is a function of delay. The model assumes that families do not make a distinction between noticing avoidant coping and maladaptive behavior. </text>
+							</popup>
+						</isee:annotation>
+					</view>
+				</isee:story>
+			</isee:stories>
+		</views>
+	</model>
+	<isee:controls>
+		<isee:control priority="imex" name="Cognitive_Vulnerabilities_AT" value="2"/>
+		<isee:control priority="imex" name="Family_Response_Delay" value="25"/>
+		<isee:control priority="imex" name="Family_Support_AT" value="25"/>
+		<isee:control priority="imex" name="Initial_Cognitive_Vulnerabilities" value="25"/>
+		<isee:control priority="imex" name="Initial_Family_Support" value="45"/>
+		<isee:control priority="imex" name="Onset_of_Maladaptive_Behaviors_Delay" value="0.15"/>
+	</isee:controls>
+</xmile>
+
