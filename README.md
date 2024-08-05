@@ -1,3 +1,11 @@
+# Characterizing Loop Dominance Patterns with Application to a Developmental Theory of the Dynamics of Adolescence Suicide
+Eyvind Hovmand Warner and Peter Hovmand
+
+August 6, 2024
+
+Presented at the 2024 International System Dynamics Conference, Bergen, Norway
+
+
 # Developmental Transitions
 The Developmental Transitions model of dynamics of cognitive vulnerability and family support is a “proof of concept” model where the primary purpose is to demonstrate the feasibility of using system dynamics to develop feedback theories in developmental psychology. As such, the primary criterion for a good model is whether or not the model successfully illustrates how system dynamics could be used to develop feedback theories. 
 
